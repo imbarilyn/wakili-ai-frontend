@@ -6,9 +6,16 @@ export default {
   ],
   theme: {
     extend: {
-      color:{
-        'primary': "#050A30",
-        'secondary': "#B9ED79",
+      colors:{
+        'main-color': "#050A30",
+        'main-color-hover': "#0e1d89",
+        'main-color-dark': "",
+        'main-color-dark-hover': "",
+        'secondary-color': "#F0F4F9",
+        'secondary-color-hover': "",
+        'secondary-color-dark': "",
+        'secondary-color-dark-hover': "",
+
       },
       fontFamily: {
         'poppins': ['Poppins Regular', 'Ubuntu', 'sans-serif'],
