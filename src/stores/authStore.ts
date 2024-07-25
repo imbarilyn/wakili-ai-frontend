@@ -1,4 +1,4 @@
-import { defineStore} from 'pinia'
+import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { set, useStorage } from '@vueuse/core'
 import { jwtDecode} from 'jwt-decode'
