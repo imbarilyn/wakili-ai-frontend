@@ -15,6 +15,11 @@ socket.on('connect', ()=>{
 socket.on('disconnect', ()=>{
   console.log('disconnected')
 })
+const {darkBgColor, setColor } = colorGenerator(authStore.getUserInfo()?.firstName || 'You')
+onMounted(()=>{
+  setColor()
+  console.log(authStore.getUserInfo()?.picture)
+})
 
 </script>
 
