@@ -1,10 +1,34 @@
+<script setup lang="ts">
+
+import { useAuthStore } from '@/stores'
+import { computed } from 'vue'
+
+export interface UserBubbleProps {
+  userInput: string
+  isTyping?: boolean
+  isCopyable?: boolean
+  hasError?: boolean
+  picture?: string
+  darkBgColor?: string
+}
+const authStore = useAuthStore()
+const props =  defineProps<UserBubbleProps>()
+
+const iconName= computed(()=>{
+  console.log(authStore.getUserInfo()?.firstName.substring(0,2).toUpperCase())
+  return authStore.getUserInfo()?.firstName.substring(0,2).toUpperCase()
+})
+</script>
+
+
 <template>
   <div class="chat chat-end">
     <div class="chat-image avatar">
-      <div class="w-10 rounded-full">
-        <img
-          alt="Tailwind CSS chat bubble component"
-          src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+      <div class="w-10 rounded-full" :class="[!props.picture? props.darkBgColor: 'bg-none' ]">
+        <img v-if="props.picture"
+          alt="user-profile-picture"
+         :src="props.picture"/>
+        <span v-else class="text-lg font-poppins-extra-bold text-white leading-none">{{iconName}}</span>
       </div>
     </div>
     <div class="chat-header">
@@ -16,5 +40,3 @@
   </div>
 
 </template>
-<script setup lang="ts">
-</script>
