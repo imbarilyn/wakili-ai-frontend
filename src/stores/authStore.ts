@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { set, useStorage } from '@vueuse/core'
-import { jwtDecode} from 'jwt-decode'
+import { useStorage } from '@vueuse/core'
+import { jwtDecode } from 'jwt-decode'
 import moment from 'moment'
 
-export  interface CreateAccountPayload {
+export interface CreateAccountPayload {
   userName: string
-  email:string
+  email: string
   phoneNo: string
   password: string
   confirmPassword: string
@@ -23,23 +23,25 @@ export interface LoginResponse {
   token: string
 }
 
-export interface UserInfo{
+export interface UserInfo {
   firstName: string
   lastName: string
-  phoneNo: string
+  phoneNo?: string
   userId: string
+  email?: string
+  picture?: string
 }
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL as string
 
-export const useAuthStore = defineStore('authStore', ()=>{
+export const useAuthStore = defineStore('authStore', () => {
 
-  // setters
-  const isLoggedIn = ref<boolean>(false)
-  const token  = useStorage('token', '')
-  const tokenExpiry =useStorage('tokenExpiry', '')
-  const user = useStorage('user', '')
-
-
+    // setters
+    const isLoggedIn = ref<boolean>(false)
+    const token = useStorage('w-token', '')
+    const tokenExpiry = useStorage('w-token-expiry', '')
+    const user = useStorage('w-user', '')
+    const isEverLoggedIn = useStorage('_h_eve_lgg_in_', false)
 
 
     //   getters
@@ -146,45 +148,52 @@ export const useAuthStore = defineStore('authStore', ()=>{
 
     function setUserInfo(usr: UserInfo) {
       user.value = JSON.stringify({
-        firstName: usr.firstName,
-        lastName: usr.lastName,
-        phoneNo: usr.phoneNo,
-        userId: usr.userId
+        ...usr
       })
+      console.log(user.value)
     }
 
-    function getUserInfo(){
-    try{
-      return JSON.parse(user.value) as UserInfo
-    }
-    catch{
-      return null
-    }
+    function getUserInfo() {
+      try {
+        return JSON.parse(user.value) as UserInfo
+      } catch {
+        return null
+      }
     }
 
-  function setLoggedIn(value: boolean){
-    isLoggedIn.value = value
+    function setLoggedIn(value: boolean) {
+      isLoggedIn.value = value
+    }
+
+    function logout() {
+      isLoggedIn.value = false
+      token.value = null
+    }
+
+    function setToken(value: string) {
+      // console.log(value)
+      token.value = value
+      console.log(token.value)
+    }
+
+    return {
+      createAccount,
+      loginUser,
+      logout,
+      isLoggedIn,
+      setLoggedIn,
+      token,
+      tokenExpiry,
+      getToken,
+      getIsLoggedIn,
+      userIsLoggedIn,
+      setUserInfo,
+      getUserInfo,
+      setToken,
+      isEverLoggedIn,
+      setUserData,
+      user
+
+    }
   }
-
-  function logout(){
-    isLoggedIn.value =false
-    token.value = null
-  }
-
-  return{
-    createAccount,
-    loginUser,
-    logout,
-    isLoggedIn,
-    setLoggedIn,
-    token,
-    tokenExpiry,
-    getToken,
-    getIsLoggedIn,
-    userIsLoggedIn,
-    setUserInfo,
-    getUserInfo
-
-  }
-}
 )
