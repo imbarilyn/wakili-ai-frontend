@@ -4,6 +4,47 @@ import ChatbotBubble from '@/components/Bubble/ChatbotBubble.vue'
 import UserBubble from '@/components/Bubble/UserBubble.vue'
 import { io } from 'socket.io-client'
 import UserInput from '@/components/UserInput.vue'
+import { colorGenerator } from '@/composables/colorgenerator'
+import { onMounted, ref, watch } from 'vue'
+import { useAuthStore, useNotificationsStore, useChatbotStore} from '@/stores'
+import hljs from 'highlight.js'
+import { useRoute, useRouter } from 'vue-router'
+import { marked } from 'marked'
+import _ from 'lodash'
+import DialogModal from '@/components/toasts/DialogModal.vue'
+import moment from 'moment'
+import LoadingPage from '@/components/LoadingPage.vue'
+
+export interface Conversation {
+  message: string
+  isUser: boolean
+  isTyping?: boolean
+  hasError?: boolean
+  uniqueId: string | number
+  audioData?:{
+    audio: Blob,
+    audioUrl: string
+  }
+}
+
+interface Subscription {
+  message:string
+  sessionId: string
+  conversationId:string
+  createdAt: 'string'
+}
+
+const route = useRouter()
+
+
+onMounted(()=>{
+  chatbotStore.convoId()
+  setColor()
+  // console.log(authStore.getToken)
+  //   console.log(authStore.getUserInfo()?.picture)
+return chatbotStore.isSubscription
+
+
 
 
 })
@@ -394,9 +435,9 @@ const expandSidebar = ()=>{
               </div>
             </div>
       </div>
-      <p>Here to assist with legal questions</p>
-
     </div>
+<!--    <div v-else>-->
+<!--      <LoadingPage />-->
 
 <!--    </div>-->
     <teleport to="body">
@@ -413,14 +454,21 @@ const expandSidebar = ()=>{
           </div>
         </template>
 
-    </div>
+        <template #body>
+          <div>
+            <p class="font-normal">Upgrade to keep using Wakili AI</p>
+          </div>
+        </template>
 
-
-    <div>
-      <UserInput />
-
-    </div>
-
+        <template #footer>
+          <div>
+            <button class="btn bg-main-color text-white" @click="subscribeToPlan">
+              <span v-if="!subscriptionLoading">Subscribe</span>
+              <span class="loading loading-spinner loading-sm" v-else></span>
+            </button>
+          </div>
+        </template>
+      </DialogModal>
+    </teleport>
   </div>
-
 </template>
