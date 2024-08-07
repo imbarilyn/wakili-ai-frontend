@@ -241,6 +241,67 @@ socket.on('message', (response)=>{
   mesRes.value += response.message
 })
 
+  watch(()=>mesRes.value,(value: string)=>{
+    if(!value){
+      return
+    }
+    const responseArray = value.split("~~~ENDOFSTREAM~~~")
+    const currMessage = responseArray[0]
+    const aiResponseArray = conversation.value.filter((convo)=> !convo.isUser)
+    const currentAiMessageObj = aiResponseArray[aiResponseArray.length - 1]
+    currentAiMessageObj.message = currMessage
+    console.log(conversation.value)
+
+    // if the end of stream is reached, stop typing and clear the message container
+    if(value.includes('~~~ENDOFSTREAM~~~')){
+      console.log('end of stream')
+      isGeneratingResponses.value = false
+      currentAiMessageObj.isTyping = false
+      mesRes.value = ''
+    }
+  })
+const subscriptionLoading = ref(false)
+const subscribeToPlan = ()=> {
+  // chatbotStore.setSubscription(true)
+  subscriptionLoading.value = true
+
+  chatbotStore.getSubscription()
+    .then((response) => {
+      console.log(chatbotStore.subscription)
+      if (response.result === 'success') {
+        // chatbotStore.setSubscriptionData(response.data)
+        notification.addNotification('Subscription data fetched successfully', 'success')
+        route.push({
+          name: 'chat-subscription'
+        })
+      } else {
+        console.log('failed to fetch subscription data', response.result)
+        // notification.addNotification('Failed to fetch subscription data kindly try again', 'error')
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+      notification.addNotification('Failed to fetch subscription data kindly try again', 'error')
+    })
+    .finally(() => {
+      setTimeout(() => {
+        subscriptionLoading.value = false
+        chatbotStore.setSubscription(true)
+      }, 1000)
+    })
+}
+
+
+const expandSidebar = ()=>{
+  chatbotStore.setCollapse(false)
+
+
+  console.log(window.innerWidth)
+}
+
+
+
+
 </script>
 
 <template>
