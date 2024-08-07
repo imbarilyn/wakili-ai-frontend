@@ -6,14 +6,37 @@ import { io } from 'socket.io-client'
 import UserInput from '@/components/UserInput.vue'
 
 
-const socket = io()
+})
+const socket = io('ws://192.168.100.12:5001')
+const authStore = useAuthStore()
+const chatbotStore = useChatbotStore()
+const notification = useNotificationsStore()
+const appIsFetching = ref(false)
+const conversation =ref<Conversation []>([])
+const placeholder = ref<string>('How can Wakili help you today?')
+const isGeneratingResponses = ref(false)
+const chatTextColor = ref('text-white')
+const mesRes = ref('')
+
 
 socket.on('connect', ()=>{
-  console.log('connected')
+  console.log('connected successfully')
 })
 
-socket.on('disconnect', ()=>{
-  console.log('disconnected')
+//  any errrors associated with the socket connection
+socket.on('error', (err)=>{
+  console.log('error connecting to the server', err )
+})
+
+const isPlanExpired = ref(false)
+
+
+// subscriptions
+socket.on('payment_required', (message)=>{
+  chatbotStore.setSubscription(false)
+  console.log(message)
+  isPlanExpired.value = true
+
 })
 const {darkBgColor, setColor } = colorGenerator(authStore.getUserInfo()?.firstName || 'You')
 
