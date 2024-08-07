@@ -305,11 +305,94 @@ const expandSidebar = ()=>{
 </script>
 
 <template>
-  <div class="w-full flex flex-col">
-    <div class="text-center">
-      <div class="sticky top-0 z-10 flex justify-center items-end ">
-        <img class="h-10 w-10" src="@/assets/images/justice_scale.png">
-        <h1 class="text-main-color font-semibold text-3xl sm:text-4xl ps-4">Wakiki Ai</h1>
+  <div class="relative min-h-full  w-full  flex-1 max-w-screen-xl mx-auto overflow-y-auto">
+    <div class="lg:hidden pt-6 ps-6">
+      <button class="btn btn-sm" @click="expandSidebar">
+        <span class="material-icons-outlined">menu</span>
+      </button>
+
+    </div>
+    <div class="w-full min-h-screen py-10 lg:py-14 flex flex-col md:px-16 px-10">
+      <div class="sticky top-0 z-10 lg:z-0 max-w-4xl px-4 sm:px-6 lg:px-8 mx-auto flex">
+        <div class="flex justify-center w-full">
+          <div class="flex justify-center backdrop-blur">
+            <img class="h-10 w-10" src="@/assets/images/justice_scale.png">
+          </div>
+          <div class="text-nowrap">
+            <h1 class="text-main-color font-semibold text-3xl sm:text-4xl text-center">Wakili Ai</h1>
+            <p class="text-sm">Here to assist with legal questions</p>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="relative w-full h-full px-4">
+        <Transition mode="out-in" name="slide-in">
+
+            <template v-if="!appIsFetching">
+
+              <div>
+                <ChatbotBubble
+                  :key="1"
+                  :chatbot-name="'Wakili Ai'"
+                  :chatbot-message="'Hello there! How can I help you today?'"
+                  :is-typing="false"
+                  :is-copyable="false"
+                  :has-error="false"
+                  :placeholder="placeholder"
+                />
+
+                <div class="relative" v-if="!isPlanExpired">
+                  <div class="absolute z-10 h-64  w-full flex justify-center items-center ">
+                    <div class="fixed">
+                      <img src="@/assets/images/justice_scale.png" class="h-20 w-20 opacity-35">
+                    </div>
+                  </div>
+                  <ul>
+                    <template v-for="(conv, index) in conversation" :key="index" >
+                      <UserBubble
+                        v-if="
+                                conv.isUser &&
+                                conv.message &&
+                                conv.message.length > 0 &&
+                                !conv.isTyping &&
+                                chatbotStore.conversationId
+
+                                "
+                        :picture?="authStore.getUserInfo()?.picture"
+                        :darkBgColor="darkBgColor"
+                        :userInput = conv.message
+                        :isTyping="conv.isTyping"
+                      />
+                      <ChatbotBubble
+                        v-else-if="!conv.isUser && chatbotStore.conversationId"
+                        :chatbot-message="marked.parse(conv.message)"
+                        :is-typing="conv.isTyping"
+                        :chatbot-name="'Wakili Ai'"
+                      />
+                    </template>
+                  </ul>
+                </div>
+              </div>
+            </template>
+<!--            <template v-else>-->
+<!--              <LoadingPage />-->
+<!--            </template>-->
+        </Transition>
+      </div>
+
+      <div class="absolute bottom-0 left-0 right-0 pb-6 ">
+            <div class="grid grid-cols">
+              <div class="w-11/12 lg:w-10/12 lg:ps-80 lg:ms-10 ps-12">
+                <UserInput
+                  class="fixed bg-secondary-color z-10 mb-14 lg:mb-0"
+                  :disabled="false"
+                  :isGenerating="isGeneratingResponses"
+                  :placeholder="placeholder"
+                  @user-input="handleUserInput"/>
+              </div>
+            </div>
       </div>
       <p>Here to assist with legal questions</p>
 
