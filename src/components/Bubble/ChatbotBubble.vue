@@ -1,18 +1,65 @@
+<script lang="ts" setup>
+
+import { computed, onMounted } from 'vue'
+import { useChatbotStore} from '@/stores'
+
+export interface ChatbotBubbleProps {
+  chatbotName?: string
+  isTyping?: boolean
+  isCopyable?: boolean
+  hasError?: boolean
+  picture?: string
+  chatbotMessage: string
+}
+
+const props = withDefaults(defineProps<ChatbotBubbleProps>(), {
+  isTyping: true,
+  isCopyable: false,
+  hasError: false
+})
+
+const chatbotStore = useChatbotStore()
+
+const hasText = computed(()=>{
+  return props.chatbotMessage.length > 0
+})
+// const hasCopyButton = computed(()=>{
+//   return props.isCopyable && props.chatbotMessage?.length > 0
+// })
+
+// onMounted(()=>{
+//   console.log(props.chatbotMessage)
+// })
+
+console.log(props.chatbotMessage)
+</script>
+
 <template>
-  <div class="chat chat-start">
+  <div class="chat chat-start pt-10">
     <div class="chat-image avatar">
       <div class="w-10 rounded-full">
-        <img
-          alt="Tailwind CSS chat bubble component"
-          src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+        <img src="@/assets/images/justice_scale.png" alt="wakili-ai" />
+
       </div>
     </div>
     <div class="chat-header">
-      Obi-Wan Kenobi
+      <span>{{props.chatbotName}}</span>
       <time class="text-xs opacity-50">12:45</time>
     </div>
-    <div class="chat-bubble">You were the Chosen One!</div>
+<!--    Chatbubble div-->
+    <div>
+
+      <div v-html="props.chatbotMessage"
+           v-if="hasText"
+           class="chat-bubble w-10/12">
+      </div>
+      <div
+        v-else
+           class="chat-bubble w-10/12">
+        <span class="loading loading-ball loading-lg"></span>
+      </div>
+    </div>
+
     <div class="chat-footer opacity-50">Delivered</div>
   </div>
-
 </template>
