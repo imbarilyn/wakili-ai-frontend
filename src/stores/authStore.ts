@@ -60,40 +60,35 @@ export const useAuthStore = defineStore('authStore', ()=>{
 
 
     // actions
-  async  function createAccount(payLoad: CreateAccountPayload){
-    try {
-      const response = await fetch(`${BASE_URL}/auth/user/sign-up/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        mode: 'cors',
-        body: JSON.stringify(payLoad)
-      })
-      const resp = await response.json()
-      console.log(resp)
-      if(resp.result === 'ok'){
-        console.log('Account created successfully')
-        return resp
-      }
-      else{
+    async function createAccount(payLoad: CreateAccountPayload) {
+      try {
+        const response = await fetch(`${BASE_URL}/auth/user/sign-up/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          mode: 'cors',
+          body: JSON.stringify(payLoad)
+        })
+        const resp = await response.json()
         console.log(resp)
-        console.log('Account not created')
-        return resp
+        if (resp.result === 'ok') {
+          console.log('Account created successfully')
+          return resp
+        } else {
+          console.log(resp)
+          console.log('Account not created')
+          return resp
+        }
+        // return resp
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setTimeout(() => {
+          console.log('finally block')
+        }, 500)
       }
-      // return resp
     }
-    catch(error){
-      console.log(error)
-    }
-    finally{
-      setTimeout(()=>{
-        console.log('finally block')
-
-      },500)
-    }
-
-  }
 
   async function loginUser(payLoad: LoginPayload) {
     try {
