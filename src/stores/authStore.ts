@@ -88,8 +88,8 @@ export const useAuthStore = defineStore('authStore', ()=>{
       }
     }
 
-  async function loginUser(payLoad: LoginPayload) {
-    try {
+    async function loginUser(payLoad: LoginPayload) {
+      try {
         const response = await fetch(`${BASE_URL}/auth/user/sign-in/`, {
           method: 'POST',
           headers: {
@@ -99,24 +99,22 @@ export const useAuthStore = defineStore('authStore', ()=>{
           body: JSON.stringify(payLoad)
         })
 
-      const resp = await response.json()
-      if (resp.result === 'ok') {
-        console.log('Account created successfully')
-        return resp
-      } else {
-        console.log('error logging in')
-        return resp
+        const resp = await response.json()
+        if (resp.result === 'ok') {
+          console.log('Account created successfully')
+          return setUserData(resp)
+        } else {
+          console.log('error logging in')
+          return resp
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setTimeout(() => {
+          console.log('finally block')
+        }, 500)
       }
     }
-    catch(error){
-      console.log(error)
-    }
-    finally {
-      setTimeout(() => {
-        console.log('finally block')
-      }, 500)
-    }
-  }
 
     async function setUserData(resp: { token: string }) {
       // setToken(resp.token)
