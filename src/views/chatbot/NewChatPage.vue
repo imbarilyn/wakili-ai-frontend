@@ -315,9 +315,20 @@ const expandSidebar = ()=>{
 
     </div>
 
-    <div class="h-screen items-center justify-center">
-      <ChatbotBubble />
-      <UserBubble />
+<!--    </div>-->
+    <teleport to="body">
+      <DialogModal
+        :is-open="!chatbotStore.isSubscription"
+        @closeModal="chatbotStore.setSubscription(true)"
+      >
+        <template #title>
+          <div class="flex justify-end">
+            <button class="btn btn-sm btn-circle" @click="chatbotStore.setSubscription(true)"><span class="material-icons-outlined">close</span></button>
+          </div>
+          <div>
+            <span class="font-bold text-xl">Limited Credits(2 free credits a day)</span>
+          </div>
+        </template>
 
     </div>
 
