@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { useChatbotStore} from '@/stores'
-import { watch } from 'vue'
+import { useAuthStore, useChatbotStore, useNotificationsStore } from '@/stores'
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useNotificationsStore} from '@/stores'
 import ToastContainer from '@/components/toasts/ToastContainer.vue'
 import ToastAlert from '@/components/toasts/ToastAlert.vue'
+import { colorGenerator } from '@/composables/colorgenerator'
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import SidebarComponent from '@/components/SidebarComponent.vue'
+
+
 
 const chatbotStore = useChatbotStore()
 const notificationsStore = useNotificationsStore()
+const authStore = useAuthStore()
 const router = useRouter()
 
 const currentYear = ()=>{
@@ -16,53 +21,30 @@ const currentYear = ()=>{
 
 const newChat = ()=>{
   router.push({name: 'new-chat'})
+
+
 }
+const collapseSidebar = ()=>{
+  chatbotStore.setCollapse(true)
+}
+const windowSize = ref<number>(window.innerWidth)
+watch(()=>windowSize.value, (value)=>{
+  console.log(value)
+if(!chatbotStore.isCollapsed &&  value <= 768){
+  chatbotStore.setCollapse(true)
+}
+})
+
+
+
 </script>
 
 
 <template>
-  <div class="w-full min-h-full relative flex">
-<!--    sidebar nav-->
-    <div class=" block relative w-64 h-screen border-e border-gray-300">
-      <nav class=" h-screen fixed bg-secondary-color w-64 space-x-4">
-        <div>
-            <button>
-              <span class="material-icons-outlined text-main-color">menu</span>
-            </button>
-          </div>
-
-        <div class="pt-4">
-          <button
-            @click="newChat"
-            class="btn btn-sm btn-ghost  rounded-full bg-main-color ">
-            <span class="material-icons-outlined text-white ">add</span>
-            <span class="text-white font-normal">New Chat</span>
-          </button>
-        </div>
-<!--        History section-->
-        <div class="">
-          <p>History</p>
-        </div>
-
-<!--        Footer section-->
-        <div class="absolute bottom-6 flex flex-col w-52">
-          <button class="btn btn-sm flex justify-start bg-main-color hover:bg-gray-400">
-            <span class="material-icons-outlined text-white">settings</span>
-            <span class="text-white font-normal">Settings</span>
-          </button>
-          <button class="btn btn-sm flex justify-start mt-2 bg-main-color">
-            <span class="material-icons-outlined text-white hover:text-main-color">logout</span>
-            <span class="text-white font-normal">Logout</span>
-          </button>
-        </div>
-        <div class="absolute bottom-0 flex w-full">
-          <span class="text-xs text-center" >2009-{{currentYear()}} Powered by Mzawadi</span>
-        </div>
-
-      </nav>
-    </div>
+  <div class="w-full min-h-full flex">
+    <SidebarComponent />
     <RouterView #default="{ Component, route }">
-      <Transition>
+      <Transition class="lg:ps-64">
         <template v-if="Component">
           <component :is="Component" :key="route.fullPath"  />
         </template>
@@ -84,4 +66,7 @@ const newChat = ()=>{
 
     </Teleport>
   </div>
+
 </template>
+
+
