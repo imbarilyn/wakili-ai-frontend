@@ -1,10 +1,10 @@
 <script setup lang="ts">
 
 import { useAuthStore } from '@/stores'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 export interface UserBubbleProps {
-  userInput: string
+  userInput?: string
   isTyping?: boolean
   isCopyable?: boolean
   hasError?: boolean
@@ -15,9 +15,10 @@ const authStore = useAuthStore()
 const props =  defineProps<UserBubbleProps>()
 
 const iconName= computed(()=>{
-  console.log(authStore.getUserInfo()?.firstName.substring(0,2).toUpperCase())
+  // console.log(authStore.getUserInfo()?.firstName.substring(0,2).toUpperCase())
   return authStore.getUserInfo()?.firstName.substring(0,2).toUpperCase()
 })
+// const meso = ref("<span style='color: red'>I love you!</span>")
 </script>
 
 
@@ -28,15 +29,18 @@ const iconName= computed(()=>{
         <img v-if="props.picture"
           alt="user-profile-picture"
          :src="props.picture"/>
-        <span v-else class="text-lg font-poppins-extra-bold text-white leading-none">{{iconName}}</span>
+        <div v-else class="flex justify-center h-full items-center">
+          <span class="font-poppins-extra-bold !text-xl  text-white leading-none">{{iconName}}</span>
+        </div>
+
       </div>
     </div>
     <div class="chat-header">
-      Anakin
+      <span>{{authStore.getUserInfo()?.firstName}}</span>
       <time class="text-xs opacity-50">12:46</time>
     </div>
-    <div class="chat-bubble">I hate you!</div>
-    <div class="chat-footer opacity-50">Seen at 12:46</div>
+    <div class="chat-bubble bg-secondary-color text-main-color" v-html="props.userInput"></div>
+<!--    <div class="chat-footer opacity-50">Seen at 12:46</div>-->
   </div>
 
 </template>
