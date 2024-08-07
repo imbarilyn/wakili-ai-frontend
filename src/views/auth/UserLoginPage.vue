@@ -85,7 +85,6 @@ const onLoginClick = () => {
   if (!emailMeta.valid || !passwordMeta.valid) {
     return
   }
-
   isLoadingResource.value = true
   authStore
     .loginUser(loginData)
@@ -93,27 +92,15 @@ const onLoginClick = () => {
       console.log(response)
       if (response.result === 'ok') {
         isLoadingResource.value = false
-        authStore.token = response.token
-        const decode: any = jwtDecode(response.token)
-        console.log(decode)
-        authStore.tokenExpiry = decode.exp.toString()
-          authStore.setLoggedIn(true)
-        authStore.setUserInfo({
-          firstName: decode.first_name,
-          lastName: decode.last_name,
-          phoneNo: decode.phone_no,
-          userId: decode.user_id
-        })
-        notification.addNotification('Login successful', 'success')
-        setTimeout(()=>{
-          router.push({ name: 'chat-page'})
-        },500)
-      }
-      else{
-        setTimeout(()=>{
+        notification.addNotification(response.message ?? 'Login Successful', 'success')
+        setTimeout(() => {
+          router.push({ name: 'chat-page' })
+        }, 500)
+      } else {
+        setTimeout(() => {
           isLoadingResource.value = false
           notification.addNotification('Login failed try again', 'error')
-        },500)
+        }, 500)
       }
     })
     .catch((error) => {
@@ -127,70 +114,92 @@ const onLoginClick = () => {
 }
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL as string
 
-const loginWithGoogle  = ()=>{
+const loginWithGoogle = () => {
   isLoadingResourceGoogle.value = true
   googleTokenLogin()
-    .then((googleResponse)=>{
+    .then((googleResponse) => {
       console.log('Handle the response', googleResponse)
 
-      fetch(`${BASE_URL}/auth/login/google-login/`, {
+      return fetch(`${BASE_URL}/auth/login/google-login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        mode:'cors',
+        mode: 'cors',
         body: JSON.stringify({
           access_token: googleResponse.access_token
         })
       })
-        .then((resp )=>{
-          const response = resp.json()
-          response.then((data)=>{
-            console.log('data', data)
-            if(data.result === 'ok'){
-              authStore.token = data.token
-              authStore.tokenExpiry = googleResponse.expires_in
-              isLoadingResourceGoogle.value = false
-              setTimeout(()=>{
-                notification.addNotification('Login successful', 'success')
-                router.push({name: 'chat-page'})
-              }, 1000)
-            }
-            else{
-              console.log('invalid token')
-              isLoadingResourceGoogle.value = false
-              setTimeout(()=>{
-                notification.addNotification('Login failed try again', 'error')
-              },500)
-              console.log('invalid token')
-            }
-          })
-          // console.log('Handle the response', response)
-        })
-        .catch((error)=>{
-          setTimeout(()=>{
-            isLoadingResourceGoogle.value = false
-            notification.addNotification('Login failed try again', 'error')
-          }, 500)
-
-          console.log('error', error)
-        })
-
-    //   get User info
-    //   return fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-    //     method: 'POST',
-    //     headers: {
-    //       Authorization: `Bearer ${googleResponse.access_token}`
-    //     }
-    //   })
-    //     .then((response)=>{
-    //       console.log('Handle the response', response)
-    //       return response.json()
-    //     })
-    //     .then((userInfo)=>{
-    //       console.log('User info', userInfo)
-    //     })
     })
+    .then((resp) => {
+      return resp.json()
+    })
+    .then((data) => {
+      console.log('data', data)
+      if (data.result === 'ok') {
+        return  authStore.setUserData(data)
+      } else {
+        console.log('invalid token')
+        isLoadingResourceGoogle.value = false
+        setTimeout(() => {
+          notification.addNotification('Login failed try again', 'error')
+        }, 500)
+        console.log('invalid token')
+      }
+    })
+    .then((data) => {
+      if (data && data.result === 'ok') {
+        // console.log('token', data.token)
+        // authStore.setToken(data.token)
+        // authStore.isEverLoggedIn = true
+        // authStore.tokenExpiry = googleResponse.expires_in
+        isLoadingResourceGoogle.value = false
+        setTimeout(() => {
+          notification.addNotification('Login successful', 'success')
+          router.push({ name: 'chat-page' })
+        }, 1000)
+      } else {
+        console.log('invalid token')
+        isLoadingResourceGoogle.value = false
+        setTimeout(() => {
+          notification.addNotification('Login failed try again', 'error')
+        }, 500)
+        console.log('invalid token')
+      }
+    })
+    // console.log('Handle the response', response)
+
+    .catch((error) => {
+      setTimeout(() => {
+        isLoadingResourceGoogle.value = false
+        notification.addNotification('Login failed try again', 'error')
+      }, 500)
+
+      console.log('error', error)
+    })
+
+  // get User info
+  // return fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+  //   method: 'POST',
+  //   headers: {
+  //     Authorization: `Bearer ${googleResponse.access_token}`
+  //   }
+  // })
+  //   .then((response) => {
+  //     console.log('Handle the response', response)
+  //     return response.json()
+  //
+  //   })
+  //   .then((userInfo) => {
+  //     console.log('User info', userInfo)
+  //     authStore.setUserInfo({
+  //       firstName: userInfo.given_name,
+  //       lastName: userInfo.family_name,
+  //       email: userInfo.email,
+  //       userId: userInfo.sub,
+  //       picture: userInfo.picture
+  //     })
+  //   })
 
 }
 </script>
@@ -205,12 +214,12 @@ const loginWithGoogle  = ()=>{
           <h1 class="block text-2xl font-bold text-gray-800 dark:text-white">Already have an account</h1>
           <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
             Login in here
-                        <router-link
-                          class="text-blue-600 decoration-2 hover:underline font-medium dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
-                          :to="`/auth/user-signup`"
-                        >
-                          Create account
-                        </router-link>
+            <router-link
+              class="text-blue-600 decoration-2 hover:underline font-medium dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+              :to="`/auth/user-signup`"
+            >
+              Create account
+            </router-link>
           </p>
         </div>
 
