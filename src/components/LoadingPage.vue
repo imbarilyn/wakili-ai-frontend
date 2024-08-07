@@ -1,10 +1,15 @@
+<script lang="ts" setup>
+</script>
+
 <template>
-  <div class="absolute inset-0 cursor-wait backdrop-blur">
-    <div class="w-full h-full flex justify-center items-center">
-      <span class="loading loading-spinner loading-lg"></span>
+
+  <div class="absolute w-full inset-0 z-30 bg-neutral-800 bg-opacity-10 backdrop-blur cursor-wait h-screen">
+    <div class="flex flex-col items-center justify-center h-full">
+      <div class="flex flex-col items-center justify-center mx-auto space-y-2">
+        <span class="loading loading-spinner w-12 loader"></span>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-</script>
+<style scoped></style>
