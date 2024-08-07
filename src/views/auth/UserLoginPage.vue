@@ -288,8 +288,8 @@ const loginWithGoogle  = ()=>{
 
                 >
                   <span
-                  v-if="isLoadingResourceGoogle"
-                  class="loading loading-md loading-spinner text-neutral-400"
+                    v-if="isLoadingResourceGoogle"
+                    class="loading loading-md loading-spinner text-neutral-400"
                   ></span>
                   Login with Google
                 </button>
