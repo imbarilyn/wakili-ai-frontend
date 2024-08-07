@@ -11,11 +11,15 @@ export default {
         'main-color-hover': "#0e1d89",
         'main-color-dark': "",
         'main-color-dark-hover': "",
-        'secondary-color': "#F0F4F9",
+
+        'main-color-light': "#091154",
+        'main-color-heavy':"#01030c",
+
+        'secondary-color': "#E5E7EB",
         'secondary-color-hover': "",
         'secondary-color-dark': "",
         'secondary-color-dark-hover': "",
-
+        'tertiary-color': "#B9ED79",
       },
       fontFamily: {
         'poppins': ['Poppins Regular', 'Ubuntu', 'sans-serif'],
