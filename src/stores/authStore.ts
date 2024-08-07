@@ -118,7 +118,35 @@ export const useAuthStore = defineStore('authStore', ()=>{
     }
   }
 
-    function setUserInfo(usr:UserInfo){
+    async function setUserData(resp: { token: string }) {
+      // setToken(resp.token)
+      token.value = resp.token
+
+      // console.log('stored token value ', authStore.token)
+      isEverLoggedIn.value = true
+
+      const decode: any = jwtDecode(resp.token)
+
+      console.log('user data ', decode)
+
+      tokenExpiry.value = decode.exp.toString()
+
+      setUserInfo({
+        firstName: decode.firstName,
+        lastName: decode.lastName,
+        phoneNo: decode.phoneNo,
+        userId: decode.userId,
+        picture: decode.picture,
+        email: decode.email
+      })
+
+      return {
+        result: 'ok',
+        message: 'User logged in successfully'
+      }
+    }
+
+    function setUserInfo(usr: UserInfo) {
       user.value = JSON.stringify({
         firstName: usr.firstName,
         lastName: usr.lastName,
