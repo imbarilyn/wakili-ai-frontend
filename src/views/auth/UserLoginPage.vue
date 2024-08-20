@@ -271,7 +271,7 @@ const loginWithGoogle = () => {
                     'input-primary': passwordMeta.validated && passwordMeta.valid
                   }"
                   class="input input-primary input-bordered w-full text-sm"
-                  placeholder="Phone Number"
+                  placeholder="Password"
                   required
                   type="password"
                 />
