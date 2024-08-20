@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-import { useChatbotStore } from '@/stores'
+import { useChatbotStore, type UserSubscriptionPayload } from '@/stores'
+import { computed, onMounted, ref } from 'vue'
 
 const chatbotStore = useChatbotStore()
 
@@ -11,14 +12,31 @@ const emits = defineEmits<{
 const purchasePlan = (subscriptionId: number, price: string, subscriptionName: string, duration: string) => {
   emits('purchasePlan', subscriptionId, price, subscriptionName, duration)
 }
+
+const userSubscription = ref<UserSubscriptionPayload []>([])
+ chatbotStore.getSubscription()
+  .then((response)=>{
+    console.log(response)
+    if(response.result === 'success'){
+      userSubscription.value = response.data
+    }
+    else{
+      return
+    }
+  })
+  .catch((error)=>{
+    console.log(error)
+    return
+  })
+
 </script>
 
 
 
 <template>
 
-<div class="pt-6 grid lg:grid-cols-4  md:grid-cols-2 gap-4 grid-cols-1 w-full"  >
-<div v-for="plan in chatbotStore.subscription" :key="plan.subscriptionId" class="gap-1 flex justify-center items-center">
+<div class="py-16 grid lg:grid-cols-4  md:grid-cols-2 gap-4 grid-cols-1 w-full"  >
+<div v-for="plan in userSubscription" :key="plan.subscriptionId" class="gap-1 flex justify-center items-center">
   <div class="card glass w-96 md:w-64 lg:w-96 text-white " :class="[plan.subscriptionName==='Weekly'? 'bg-secondary-color': 'bg-main-color']">
     <figure class="pt-2">
       <span class="material-icons-outlined pe-2 !text-2xl" :class="[plan.subscriptionName==='Weekly'? 'text-main-color': '']">star_border_purple500</span>
