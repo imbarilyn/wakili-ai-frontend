@@ -13,10 +13,7 @@ export interface UserInputProps {
 const micListening = ref(false)
 const props = defineProps<UserInputProps>()
 const emits = defineEmits<{
-  (event:'userInput', value: string, formatted: string, audioData?: {
-    audioBlob: Blob,
-    audioUrl: string
-  }
+  (event:'userInput', value: string, formatted: string
   ): void
 }>()
 
@@ -50,6 +47,9 @@ const hasText = computed(()=>{
 
 // adjust the textarea height
 const adjustTextAreaHeight = (element: HTMLTextAreaElement) => {
+  if(element.scrollHeight > element.clientHeight){
+    // element.style.paddingBottom = '44px'
+  }
   element.style.height = 'auto'
   // element.style.height =Math.min(element.scrollHeight, maxHeight.value) + 'px
   element.style.height = `${element.scrollHeight}px`
