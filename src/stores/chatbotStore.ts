@@ -22,7 +22,7 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   const conversationId =ref<string>('')
   const isSubscription = ref<boolean>(true)
   const appIsFetching = ref<boolean>(false)
-  const isCollapsed = ref<boolean>(false)
+  const isCollapsed = ref<boolean>(true)
   const subscription = ref<UserSubscriptionPayload []>([])
   const getSubscriptionData = computed(()=>subscription?.value)
 
@@ -44,15 +44,13 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   const setSubscriptionData = (value: UserSubscriptionPayload[])=> {
   subscription.value = {...value}
   }
-
-
-
   //actions
   async function convoId(){
     const authStore = useAuthStore()
     const notification = useNotificationsStore()
+    console.log(authStore.getToken)
     try{
-      const response = await fetch('http://192.168.100.12:5000/api/get-conversation-id/', {
+      const response = await fetch(`${BASE_URL}/api/get-conversation-id/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,10 +59,11 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
         mode:'cors'
       })
       const data = await response.json()
-      // console.log(data)
+      console.log(data)
       if(data.result === 'ok'){
         // console.log('conversation id', data.conversationId)
         conversationId.value = data.conversationId
+        notification.addNotification('Wakili Ai is set up and ready to assist you', 'success')
       }
       else{
         console.log('error', data)

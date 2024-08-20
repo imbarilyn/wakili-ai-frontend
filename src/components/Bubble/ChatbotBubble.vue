@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-import { computed, onMounted } from 'vue'
+import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
 import { useChatbotStore} from '@/stores'
 
 export interface ChatbotBubbleProps {
@@ -51,7 +51,7 @@ console.log(props.chatbotMessage)
 
       <div v-html="props.chatbotMessage"
            v-if="hasText"
-           class="chat-bubble w-10/12">
+           class="chat-bubble lg:w-10/12 w-11/12 text-md">
       </div>
       <div
         v-else
