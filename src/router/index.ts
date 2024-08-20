@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores'
     {
       name: 'home',
       path: '/',
-      redirect: '/chat'
+      redirect: '/new-chat'
     },
     {
       name: 'auth',
@@ -44,23 +44,28 @@ import { useAuthStore } from '@/stores'
     },
     {
       name: 'chat-page',
-      path: '/chat',
+      path: '/new-page',
       component: () => import('../views/chatbot/ChatPage.vue'),
       children: [
         {
           name: 'new-chat',
-          path: '/new-chat',
-          component: () => import('../views/chatbot/NewChatPage.vue')
+          path: '/:chat',
+          component: () => import('../views/chatbot/NewChatPage.vue'),
+          props: (route: any)=>{
+            return{
+              chat: route.params.chat
+            }
+          }
         },
         {
           name: 'chat-history',
-          path: 'chatId/chat-history',
+          path: '/:chat',
           component: ()=>import('../views/chatbot/ChatHistory.vue'),
-          // props:(route: any)=>{
-          //   return {
-          //     chatId: route.params.chatId
-          //   }
-          // }
+          props: (route: any)=>{
+            return{
+              chat: route.params.chat
+            }
+          }
 
         },
       ],
@@ -98,11 +103,16 @@ router.beforeEach((to, _from, next)=>{
     'chat',
     'home',
     'chat-page',
-    'sign-up'
+    'sign-up',
+    'chat-subscription'
   ]
   const isExcludedRoute = excludedRoutes.includes(to.name as string)
+  console.log(authStore.isLoggedIn)
+  console.log(to.name)
   if(!authStore.userIsLoggedIn){
+    console.log(isExcludedRoute)
     if(isExcludedRoute){
+      console.log(isExcludedRoute)
       console.log("you are not logged in")
       console.log('going to', to.name)
       next({name: 'user-login'})
@@ -112,6 +122,7 @@ router.beforeEach((to, _from, next)=>{
       next()
     }
   }
+  console.log(to.name)
   next()
 })
 
