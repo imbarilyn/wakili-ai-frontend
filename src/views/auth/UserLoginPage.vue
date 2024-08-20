@@ -94,7 +94,10 @@ const onLoginClick = () => {
         isLoadingResource.value = false
         notification.addNotification(response.message ?? 'Login Successful', 'success')
         setTimeout(() => {
-          router.push({ name: 'chat-page' })
+          router.push({
+            name: 'new-chat',
+            params: {chat: 'new-chat'}
+          })
         }, 500)
       } else {
         setTimeout(() => {
@@ -156,7 +159,10 @@ const loginWithGoogle = () => {
         isLoadingResourceGoogle.value = false
         setTimeout(() => {
           notification.addNotification('Login successful', 'success')
-          router.push({ name: 'chat-page' })
+          router.push({
+            name: 'new-chat',
+            params: {chat: 'new-chat'}
+          })
         }, 1000)
       } else {
         console.log('invalid token')
