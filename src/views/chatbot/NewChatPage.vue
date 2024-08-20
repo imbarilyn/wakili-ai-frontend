@@ -102,9 +102,9 @@ const renderer: any = {
     }).join('\n')
 
     return `
-   <div class="bg-white p-2.5 rounded-xl shadow-lg shadow-slate-300/10 my-3">
+   <div class="bg-base-100 p-2.5 rounded-xl shadow-lg shadow-base-200 my-5">
     <div class="overflow-x-auto py-4">
-        <table class="table table-zebra border">
+        <table class="table table-sm md:text-md table-zebra border">
         <thead>
             ${header}
         </thead>
@@ -116,17 +116,17 @@ const renderer: any = {
     </div>
   `
   },
-  tablerow(content: string) {
-    return `
-    <tr class="hover">${content}</tr>
-  `
-  },
-  tablecell(content: string) {
-    return `
-    <td>${content}</td>
-  `
-  },
-  code(code: string, language: string) {
+  // tablerow(content: string) {
+  //   return `
+  //   <tr class="hover">${content}</tr>
+  // `
+  // },
+  // tablecell(content: string) {
+  //   return `
+  //   <td>${content}</td>
+  // `
+  // },
+  code({text: code, lang:language, codeBlockStyle, escaped}: Tokens.Code) {
     // return `
     //   <pre><div class="mockup-code my-3"><div class="px-4"><code>${code}</code></div></div></pre>
     // `;
@@ -135,23 +135,28 @@ const renderer: any = {
       const ignoreIllegals = true
       return `
   <div class="p-2 flex w-full">
-       <pre class="w-full"><div class="mockup-code bg-neutral-800 my-3 relative shadow-xl w-full overflow-auto"><div class="px-4 flex-1 overflow-auto h-full w-full"><code class="language-${language}">${
-        hljs.highlight(code, {
-          language,
-          ignoreIllegals
-        }).value
-      }</code></div></div></pre>
+       <pre class="w-full"><div class="mockup-code bg-neutral-800 my-3 relative shadow-xl w-full overflow-auto"><div class="px-4 flex-1 overflow-auto h-full w-full"><code class="language-${language}">${hljs.highlight(code, {
+        language,
+        ignoreIllegals
+      }).value}</code></div></div></pre>
   </div>
     `
     } else {
       return `
   <div class="p-3 flex w-full">
-    <pre class="w-full"><div class="mockup-code bg-neutral-800 my-2.5 w-full overflow-auto"><div class="px-4 flex-1 overflow-auto h-full w-full"><code>${code}</code></div></div></pre>
+    <div class="mockup-code bg-base-100 my-2.5 w-full overflow-auto max-w-full"><pre class="w-full text-sm md:text-md text-base-content"><div class="px-4 flex-1 overflow-auto h-full w-full"><code>${code}</code></div></pre></div>
   </div>
   `
     }
   },
-  list(body: string, ordered: boolean, start: number | undefined) {
+  list({ordered, start, loose, items}: Tokens.List) {
+    console.log('items is -> ', items)
+    const body = items.map(({task, checked, loose, text}) => {
+      return `
+      <li class="text-base-accent text-sm md:text-md">${marked.parseInline(text)}</li>
+      `;
+    }).join('\n')
+
     if (ordered) {
       if (start) {
         return `
@@ -173,42 +178,65 @@ const renderer: any = {
     `
     }
   },
-  listitem(text: string) {
+  listitem({task, checked, loose, text}: Tokens.ListItem) {
     return `
-    <li class="${chatTextColor.value}">${text}</li>
+    <li class="text-base-accent text-sm md:text-md">${marked.parseInline(text)}</li>
   `
   },
-  paragraph(text: string) {
+  paragraph({text, pre}: Tokens.Paragraph) {
     return `
-    <p class="${chatTextColor.value} leading-relaxed">${text}</p>
+    <p class="text-base-accent leading-relaxed text-sm md:text-md">${marked.parseInline(text)}</p>
   `
   },
-  heading(text: string, level: string) {
+  heading({text, depth: level}: Tokens.Heading) {
+    let cssClassLevel = 'text-lg my-2';
+
+    switch (level) {
+      case 1:
+        cssClassLevel = 'text-xl md:text-2xl my-2 text-tertiary-color'
+        break
+      case 2:
+        cssClassLevel = 'text-lg md:text-xl my-1.5 text-tertiary-color'
+        break
+      case 3:
+        cssClassLevel = 'text-sm md:text-lg my-1.5 text-tertiary-color'
+        break
+      case 4:
+        cssClassLevel = 'text-xs md:text-base my-1 text-tertiary-color'
+        break
+      case 5:
+        cssClassLevel = 'text-xxs md:text-sm my-1 text-tertiary-color'
+        break
+      case 6:
+        cssClassLevel = 'text-xxxs md:text-xs my-0.5 text-tertiary-color'
+        break
+    }
+
     return `
-    <h${level} class="text-2xl font-poppins-bold text-tertiary-color dark:text-neutral-50">${text}</h${level}>
+    <h${level} class="${cssClassLevel} font-poppins-semi-bold text-base-accent">${text}</h${level}>
   `
   },
   hr() {
     return `
-    <hr class="my-4 border-neutral-200 dark:border-neutral-700"/>
+    <hr class="my-4 border-neutral-200"/>
   `
   },
-  blockquote(quote: string) {
+  blockquote({text: quote}: Tokens.Blockquote) {
     return `
-    <blockquote class="my-4 border-l-4 border-neutral-200 dark:border-neutral-700 pl-4">${quote}</blockquote>
+    <blockquote class="my-4 border-l-4 border-neutral-200 pl-4">${quote}</blockquote>
   `
   },
-  image(href: string, title: string, text: string) {
+  image({href, title, text}: Tokens.Image) {
     return `
     <img src="${href}" alt="${text}" title="${title}" class="w-full"/>
   `
   },
-  strong(text: string) {
+  strong({text}: Tokens.Strong) {
     return `
-    <strong class="font-poppins-semi-bold my-1 text-base">${text}</strong>
+    <strong class="font-poppins-semi-bold my-2.5 text-sm md:text-md">${text}</strong>
   `
   },
-  codespan(code: string) {
+  codespan({text: code}: Tokens.Codespan) {
     // return `
     //   <pre><div class="mockup-code"><div class="px-4"><code>${code}</code></div></div></pre>
     // `;
@@ -218,25 +246,41 @@ const renderer: any = {
     <code class="font-poppins-semi-bold my-1">&acute;${code}&acute;</code>
   `
   },
-  // descriptionList(body: string) {
-  //   return `
-  //   <dl>${body}</dl>
-  // `
-  // },
-  // description(dt: string, dd: string) {
-  //   return `
-  //   <dt>${dt}</dt>
-  //   <dd>${dd}</dd>
-  // `
-  // }
+  em({text}: Tokens.Em) {
+
+    return `
+    <em class="font-poppins-light my-1 text-sm md:text-md">${text}</em>
+  `
+  },
+  del({text}: Tokens.Del) {
+    return `
+    <del class="font-poppins-light my-1 text-sm md:text-md">${text}</del>
+  `
+  },
+  text({text, type}: Tokens.Text | Tokens.Escape | Tokens.Tag) {
+    if (type === 'text') {
+      return `
+      <span class="text-md md:text-lg">${text}</span>
+    `
+    } else if (type === 'escape') {
+      return `
+      <span class="text-sm md:text-md">${text}</span>
+    `
+    } else {
+      return `
+      <span class="text-sm md:text-md">${text}</span>
+    `
+    }
+  }
 }
 
-// create a custom description list renderer
+
 
 marked.use({
   renderer,
   breaks: true,
-  gfm: true
+  gfm: true,
+  useNewRenderer: true
 })
 
 const handleUserInput = (
