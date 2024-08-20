@@ -543,10 +543,6 @@ setTimeout(()=>{
             </div>
       </div>
     </div>
-<!--    <div v-else>-->
-<!--      <LoadingPage />-->
-
-<!--    </div>-->
     <teleport to="body">
       <DialogModal
         :is-open="!chatbotStore.isSubscription"
