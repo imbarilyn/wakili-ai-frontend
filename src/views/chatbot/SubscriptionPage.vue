@@ -121,12 +121,12 @@ const closeModal = ()=>{
 <template>
   <div class="h-screen w-full fixed overflow-y-auto lg:px-20 lg:pb-20 lg:top-12 px-10 pb:10 top-8 ">
     <div class="top-0 sticky z-50 backdrop-blur">
-    <div class="flex justify-between">
-      <div>
+    <div class="grid grid-cols-3 w-full">
+      <div class="md:col-span-2 col-span-3">
         <h1 class="!text-2xl font-bold capitalize" v-if="firstName?.substring(firstName.length-2, firstName.length-1) !== 's'">{{firstName}}'s  Subscription</h1>
         <h1 v-else class="!text-4xl capitalize">{{firstName}}' Subscription</h1>
       </div>
-      <div>
+      <div class="md:col-span-1 col-span-2 flex md:justify-end">
         <button class="bg-main-color text-white rounded-lg btn btn-sm">
           <span class="material-icons-outlined">change_circle</span>
           <span>Change Plan</span>
