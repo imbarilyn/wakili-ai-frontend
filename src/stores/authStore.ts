@@ -42,6 +42,9 @@ export const useAuthStore = defineStore('authStore', () => {
     const tokenExpiry = useStorage('w-token-expiry', '')
     const user = useStorage('w-user', '')
     const isEverLoggedIn = useStorage('_h_eve_lgg_in_', false)
+  const openLogoutDialog = ref({
+    isOpen: false,
+  })
 
 
     //   getters
@@ -55,6 +58,7 @@ export const useAuthStore = defineStore('authStore', () => {
       // if (!isValid) {
       //   logout()
       // }
+      console.log('checking if logged in')
       return Boolean(token.value) && expiry.isAfter(now)
     })
 
@@ -176,6 +180,15 @@ export const useAuthStore = defineStore('authStore', () => {
       console.log(token.value)
     }
 
+    const setOpenLogoutDialog = ()=>{
+      openLogoutDialog.value.isOpen = true
+    }
+
+    const setCloseLogoutDialog = ()=> {
+      openLogoutDialog.value.isOpen = false
+    }
+
+
     return {
       createAccount,
       loginUser,
@@ -192,7 +205,10 @@ export const useAuthStore = defineStore('authStore', () => {
       setToken,
       isEverLoggedIn,
       setUserData,
-      user
+      user,
+      setOpenLogoutDialog,
+      openLogoutDialog,
+      setCloseLogoutDialog
 
     }
   }
