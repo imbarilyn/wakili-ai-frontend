@@ -322,6 +322,7 @@ const handleUserInput = (
     })
   }
   catch(e){
+    scrollBottom()
     console.log(e)
     aiMessage.value.hasError = true
     aiMessage.value.message += `
@@ -398,6 +399,53 @@ const expandSidebar = ()=>{
 
   console.log(window.innerWidth)
 }
+
+const currentScrollPosition = ref(0)
+const isBottom = ref(false)
+const isScrolling = ref(false)
+const conversationContainerHeight = ref(0)
+const isScrollable = ref(false)
+
+const scrollBottom =()=>{
+  // if currentPosition is greater than 0 means the element is scrollable
+  if(currentScrollPosition.value > 0){
+    isScrollable.value = true
+  }
+  // we want to scroll into the element #user-input-holder to bring it to view
+  const conversationCon = document.querySelector('#user-input-placeholder')
+  conversationCon?.scrollIntoView({
+    behavior:'smooth',
+    block: 'end',
+    inline: 'nearest'
+  })
+  console.log('scrolling bottom')
+}
+
+
+document .addEventListener('scroll', ()=>{
+  //getting the height of the <html> tag
+  currentScrollPosition.value = document.documentElement.scrollTop
+  // we  know the user is at tbe bottom if scrollTop of the div container is greater or equal to the scrollHeight - clientHeight
+  if(conversationContainerRef.value){
+    isBottom.value = conversationContainerRef.value?.scrollTop >= conversationContainerRef.value?.scrollHeight - conversationContainerRef.value?.clientHeight
+    // set isScrolling to true if the user is scrolling and is not at the bottom and the element is at the top
+    isScrolling.value = currentScrollPosition.value > 0 && !isBottom.value
+  }
+})
+
+// check if the conversation array has something and scrolling to the bottom
+watch(conversation.value, ()=>{
+  if(conversationContainerRef.value){
+    conversationContainerHeight.value = conversationContainerRef.value.clientHeight || 0
+  }
+  console.log('conversation array changed')
+  scrollBottom()
+})
+
+setTimeout(()=>{
+  scrollBottom()
+}, 1000)
+
 
 
 
