@@ -53,10 +53,10 @@ const signOut = ()=>{
 
 
 <template>
-  <div class="w-full min-h-full flex">
-    <SidebarComponent />
+  <div class="w-full min-h-screen relative flex">
+    <SidebarComponent @logout = 'logOut'/>
     <RouterView #default="{ Component, route }">
-      <Transition class="lg:ps-64">
+      <Transition class="lg:px-20">
         <template v-if="Component">
           <component :is="Component" :key="route.fullPath"  />
         </template>
