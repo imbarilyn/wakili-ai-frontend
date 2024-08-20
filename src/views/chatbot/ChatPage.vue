@@ -75,6 +75,33 @@ const signOut = ()=>{
         </template>
      </ToastContainer>
 
+      <DialogModal
+        :is-open="authStore.openLogoutDialog.isOpen"
+        @closeModal="authStore.setCloseLogoutDialog"
+      >
+        <template #title>
+          <div class="flex justify-center">
+            <span class="material-icons-outlined !text-6xl"> logout </span>
+          </div>
+        </template>
+        <template #body>
+          <div class="flex justify-center">
+            <h1 class="text-xl font-bold">Oh no! You're leaving...</h1>
+          </div>
+          <div class="flex justify-center">
+            <p class="text-lg font-semibold">Are you sure?</p>
+          </div>
+        </template>
+        <template #footer>
+          <div class="flex justify-center">
+            <button class="btn bg-main-color text-white me-5" @click="signOut">Sign Out</button>
+            <button class="btn bg-secondary-color w-[200px]" @click="authStore.setCloseLogoutDialog()">
+              Cancel
+            </button>
+          </div>
+        </template>
+      </DialogModal>
+
 
     </Teleport>
   </div>
