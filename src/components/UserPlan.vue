@@ -23,8 +23,8 @@ const props =withDefaults(defineProps<UserPlan>(),{
           <span class="material-icons-outlined">subscriptions</span>
         </div>
         <div>
-          <p class="!text-xl">Subscription</p>
-          <h2>Weekly Plan</h2>
+          <p class="lg:!text-xl text-sm">Subscription</p>
+          <h2 class="lg:text-xl text-sm">Weekly Plan</h2>
         </div>
       </div>
       <div class="bg-main-color text-white rounded-lg flex p-4" >
@@ -32,19 +32,19 @@ const props =withDefaults(defineProps<UserPlan>(),{
           <span class="material-icons-outlined">work_outline</span>
         </div>
         <div>
-          <p class="!text-xl">Limit</p>
-          <h2>7 Days</h2>
+          <p class="lg:!text-xl text-sm">Limit</p>
+          <h2  class="lg:text-xl text-sm">7 Days</h2>
         </div>
 
 
       </div>
-      <div class="bg-main-color text-white rounded-lg flex p-4" >
+      <div class="bg-main-color text-white rounded-lg flex p-4 items-center" >
         <div class="pe-4 flex items-center">
           <span class="material-icons-outlined">payments</span>
         </div>
-        <div>
-          <p class="!text-xl">Plan Cost</p>
-          <h2>Kes.300</h2>
+        <div class="">
+          <p class="lg:!text-xl text-sm">Plan Cost</p>
+          <h2 class="lg:text-xl text-sm">Kes.300</h2>
         </div>
 
 
@@ -54,8 +54,8 @@ const props =withDefaults(defineProps<UserPlan>(),{
           <span class="material-icons-outlined">schedule</span>
         </div>
         <div>
-          <p class="!text-xl">Subscription Date</p>
-          <h2>19 Feb 2020</h2>
+          <p  class="lg:!text-xl text-sm">Subscription Date</p>
+          <h2 class="lg:text-xl text-sm" >19 Feb 2020</h2>
         </div>
 
 
