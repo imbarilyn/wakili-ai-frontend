@@ -4,9 +4,8 @@ import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import ToastContainer from '@/components/toasts/ToastContainer.vue'
 import ToastAlert from '@/components/toasts/ToastAlert.vue'
-import { colorGenerator } from '@/composables/colorgenerator'
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import SidebarComponent from '@/components/SidebarComponent.vue'
+import DialogModal from '@/components/toasts/DialogModal.vue'
 
 
 
@@ -35,6 +34,19 @@ if(!chatbotStore.isCollapsed &&  value <= 768){
 }
 })
 
+const logOut = ()=>{
+  authStore.setOpenLogoutDialog()
+}
+
+const signOut = ()=>{
+  authStore.logout()
+  setTimeout(()=>{
+    router.push({name: 'user-login'})
+    authStore.setCloseLogoutDialog()
+  }, 1000)
+
+
+}
 
 
 </script>

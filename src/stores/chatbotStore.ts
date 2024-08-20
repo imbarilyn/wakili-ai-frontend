@@ -89,8 +89,8 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       console.log(data)
       if(data.result === 'success'){
         console.log(data)
-        setSubscriptionData({...data.data})
-        console.log(subscription.value)
+        // setSubscriptionData({...data.data})
+        // console.log(subscription.value)
         return data
       }
       else {
