@@ -80,8 +80,146 @@ socket.on('payment_required', (message)=>{
 })
 const {darkBgColor, setColor } = colorGenerator(authStore.getUserInfo()?.firstName || 'You')
 
-const renderer: any = {
-  link(href: string, title: string, text: string) {
+// const renderer: any = {
+//   link(href: string, title: string, text: string) {
+//     return `<a target="_blank" class="link link-primary" href="${href}" title="${title}">${text}</a>`
+//   },
+//   table(header: string, body: string) {
+//     return `
+//    <div class="bg-white p-2.5 rounded-xl shadow-lg shadow-slate-300/10 my-3">
+//     <div class="overflow-x-auto py-4">
+//         <table class="table table-zebra border">
+//         <thead>
+//             ${header}
+//         </thead>
+//         <tbody>
+//             ${body}
+//         </tbody>
+//     </table>
+//     </div>
+//     </div>
+//   `
+//   },
+//   tablerow(content: string) {
+//     return `
+//     <tr class="hover">${content}</tr>
+//   `
+//   },
+//   tablecell(content: string) {
+//     return `
+//     <td>${content}</td>
+//   `
+//   },
+//   code(code: string, language: string) {
+//     // return `
+//     //   <pre><div class="mockup-code my-3"><div class="px-4"><code>${code}</code></div></div></pre>
+//     // `;
+//
+//     if (language) {
+//       const ignoreIllegals = true
+//       return `
+//   <div class="p-2 flex w-full">
+//        <pre class="w-full"><div class="mockup-code bg-neutral-800 my-3 relative shadow-xl w-full overflow-auto"><div class="px-4 flex-1 overflow-auto h-full w-full"><code class="language-${language}">${
+//         hljs.highlight(code, {
+//           language,
+//           ignoreIllegals
+//         }).value
+//       }</code></div></div></pre>
+//   </div>
+//     `
+//     } else {
+//       return `
+//   <div class="p-3 flex w-full">
+//     <pre class="w-full"><div class="mockup-code bg-neutral-800 my-2.5 w-full overflow-auto"><div class="px-4 flex-1 overflow-auto h-full w-full"><code>${code}</code></div></div></pre>
+//   </div>
+//   `
+//     }
+//   },
+//   list(body: string, ordered: boolean, start: number | undefined) {
+//     console.log(body)
+//     if (ordered) {
+//       if (start) {
+//         return `
+//          <div class="my-2 py-2 mx-3">
+//             <ol start="${start}" class="list-decimal list-outside mx-5 space-y-0.5 md:space-y-1 lg:space-y-1.5">${body}</ol>
+//          </div>
+//       `
+//       }
+//       return `
+//          <div class="my-2 py-2 mx-3">
+//             <ol class="list-decimal mx-5 list-outside space-y-0.5 md:space-y-1 lg:space-y-1.5">${body}</ol>
+//          </div>
+//     `
+//     } else {
+//       return `
+//          <div class="my-2 py-2 mx-3">
+//             <ul class="list-disc list-outside mx-5 space-y-0.5 md:space-y-1 lg:space-y-1.5">${body}</ul>
+//          </div>
+//     `
+//     }
+//   },
+//   listitem(text: string) {
+//     console.log(text)
+//     return `
+//     <li class="${chatTextColor.value}">${marked.parseInline(text)}</li>
+//   `
+//   },
+//   paragraph(text: string) {
+//     return `
+//     <p class="${chatTextColor.value} leading-relaxed">${text}</p>
+//   `
+//   },
+//   heading(text: string, level: string) {
+//     return `
+//     <h${level} class="text-2xl font-poppins-bold text-tertiary-color dark:text-neutral-50">${text}</h${level}>
+//   `
+//   },
+//   hr() {
+//     return `
+//     <hr class="my-4 border-neutral-200 dark:border-neutral-700"/>
+//   `
+//   },
+//   blockquote(quote: string) {
+//     return `
+//     <blockquote class="my-4 border-l-4 border-neutral-200 dark:border-neutral-700 pl-4">${quote}</blockquote>
+//   `
+//   },
+//   image(href: string, title: string, text: string) {
+//     return `
+//     <img src="${href}" alt="${text}" title="${title}" class="w-full"/>
+//   `
+//   },
+//   strong(text: string) {
+//     return `
+//     <strong class="font-poppins-semi-bold my-1 text-base">${text}</strong>
+//   `
+//   },
+//   codespan(code: string) {
+//     // return `
+//     //   <pre><div class="mockup-code"><div class="px-4"><code>${code}</code></div></div></pre>
+//     // `;
+//
+//     // we'll rather render this like in chatGPT
+//     return `
+//     <code class="font-poppins-semi-bold my-1">&acute;${code}&acute;</code>
+//   `
+//   },
+//   // descriptionList(body: string) {
+//   //   return `
+//   //   <dl>${body}</dl>
+//   // `
+//   // },
+//   // description(dt: string, dd: string) {
+//   //   return `
+//   //   <dt>${dt}</dt>
+//   //   <dd>${dd}</dd>
+//   // `
+//   // }
+// }
+//
+// create a custom description list renderer
+const renderer: RendererObject = {
+  link({href, title, text}: Tokens.Link) {
     return `<a target="_blank" class="link link-primary" href="${href}" title="${title}">${text}</a>`
   },
   table({header: hd, rows, align}: Tokens.Table) {
@@ -298,6 +436,7 @@ const handleUserInput = (
     uniqueId: _.uniqueId('user-'),
     audioData
   })
+  scrollBottom()
   // push the user message to the conversation array
   conversation.value.push(userMessage.value)
   console.log(conversation.value)
@@ -395,8 +534,6 @@ const subscribeToPlan = ()=> {
 
 const expandSidebar = ()=>{
   chatbotStore.setCollapse(false)
-
-
   console.log(window.innerWidth)
 }
 
@@ -451,35 +588,32 @@ setTimeout(()=>{
 
 
 </script>
-
 <template>
-  <div class="relative min-h-full  w-full  flex-1 max-w-screen-xl mx-auto overflow-y-auto">
-    <div class="lg:hidden pt-6 ps-6">
-      <button class="btn btn-sm" @click="expandSidebar">
-        <span class="material-icons-outlined">menu</span>
-      </button>
-
-    </div>
-    <div class="w-full min-h-screen py-10 lg:py-14 flex flex-col md:px-16 px-10">
-      <div class="sticky top-0 z-10 lg:z-0 max-w-4xl px-4 sm:px-6 lg:px-8 mx-auto flex">
-        <div class="flex justify-center w-full">
-          <div class="flex justify-center backdrop-blur">
-            <img class="h-10 w-10" src="@/assets/images/justice_scale.png">
-          </div>
-          <div class="text-nowrap">
-            <h1 class="text-main-color font-semibold text-3xl sm:text-4xl text-center">Wakili Ai</h1>
-            <p class="text-sm">Here to assist with legal questions</p>
+  <div class="relative min-h-full  w-full flex justify-center flex-1 max-w-screen-xl mx-auto overflow-y-auto"
+  ref="conversationContainerRef">
+    <div class="w-full min-h-screen py-10  lg:py-14 flex flex-col">
+      <div class="sticky top-0">
+        <div class="lg:hidden block z-40 sm:ps-4 pt-3">
+          <button class="btn btn-sm" @click="expandSidebar">
+            <span class="material-icons-outlined">menu</span>
+          </button>
+        </div>
+        <div class="max-w-4x">
+          <div class="flex justify-center w-full">
+            <div class="flex justify-center backdrop-blur">
+              <img class="h-10 w-10" src="@/assets/images/justice_scale.png">
+            </div>
+            <div class="text-nowrap">
+              <h1 class="text-main-color font-semibold text-3xl sm:text-4xl text-center">Wakili Ai</h1>
+              <p class="text-sm">Here to assist with legal questions</p>
+            </div>
           </div>
         </div>
-
-
       </div>
 
-      <div class="relative w-full h-full px-4">
+      <div class="relative w-full h-full lg:px-4 px-14">
         <Transition mode="out-in" name="slide-in">
-
             <template v-if="!appIsFetching">
-
               <div>
                 <ChatbotBubble
                   :key="1"
@@ -494,7 +628,7 @@ setTimeout(()=>{
                 <div class="relative" v-if="!isPlanExpired">
                   <div class="absolute z-10 h-64  w-full flex justify-center items-center ">
                     <div class="fixed">
-                      <img src="@/assets/images/justice_scale.png" class="h-20 w-20 opacity-35">
+                      <img src="@/assets/images/justice_scale.png" class="h-20 w-20 opacity-50">
                     </div>
                   </div>
                   <ul>
@@ -515,7 +649,7 @@ setTimeout(()=>{
                       />
                       <ChatbotBubble
                         v-else-if="!conv.isUser && chatbotStore.conversationId"
-                        :chatbot-message="marked.parse(conv.message)"
+                        :chatbot-message ="marked.parse(conv.message) as string"
                         :is-typing="conv.isTyping"
                         :chatbot-name="'Wakili Ai'"
                       />
@@ -524,17 +658,16 @@ setTimeout(()=>{
                 </div>
               </div>
             </template>
-<!--            <template v-else>-->
-<!--              <LoadingPage />-->
-<!--            </template>-->
         </Transition>
       </div>
-
-      <div class="absolute bottom-0 left-0 right-0 pb-6 ">
+      <div v-if="isBottom" class="py-4 bg-gradient-to-t from-main-color-light-color block"></div>
+      <div class="absolute bottom-0 left-0  right-0 lg:pb-6">
             <div class="grid grid-cols">
-              <div class="w-11/12 lg:w-10/12 lg:ps-80 lg:ms-10 ps-12">
+              <div
+
+                class="w-11/12 lg:w-10/12 mx-auto md:ms-10">
                 <UserInput
-                  class="fixed bg-secondary-color z-10 mb-14 lg:mb-0"
+                  class="fixed bg-secondary-color z-10 mb-6"
                   :disabled="false"
                   :isGenerating="isGeneratingResponses"
                   :placeholder="placeholder"
@@ -542,6 +675,7 @@ setTimeout(()=>{
               </div>
             </div>
       </div>
+      <div id="user-input-placeholder"></div>
     </div>
     <teleport to="body">
       <DialogModal
