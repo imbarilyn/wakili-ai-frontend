@@ -43,12 +43,10 @@ onMounted(()=>{
   // console.log(authStore.getToken)
   //   console.log(authStore.getUserInfo()?.picture)
 return chatbotStore.isSubscription
-
-
-
-
 })
-const socket = io('ws://192.168.100.12:5001')
+const SOCKETS_URL = import.meta.env.VITE_APP_SOCKET_IO_URL as string
+// const socket = io('ws://192.168.100.12:5001')
+const socket = io(`${SOCKETS_URL}`)
 const authStore = useAuthStore()
 const chatbotStore = useChatbotStore()
 const notification = useNotificationsStore()
@@ -58,6 +56,7 @@ const placeholder = ref<string>('How can Wakili help you today?')
 const isGeneratingResponses = ref(false)
 const chatTextColor = ref('text-white')
 const mesRes = ref('')
+const conversationContainerRef = ref<HTMLDivElement | null>(null)
 
 
 socket.on('connect', ()=>{
@@ -85,7 +84,23 @@ const renderer: any = {
   link(href: string, title: string, text: string) {
     return `<a target="_blank" class="link link-primary" href="${href}" title="${title}">${text}</a>`
   },
-  table(header: string, body: string) {
+  table({header: hd, rows, align}: Tokens.Table) {
+    const header = hd.map(({text, header}) => {
+      return `
+      <th class="text-base-content text-sm md:text-md">${marked.parseInline(text)}</th>
+    `
+    }).join('\n')
+
+    const body = rows.map((row) => {
+      return `
+      <tr>${row.map(({text, header}) => {
+        return `
+        <td class="text-base-content text-sm md:text-md">${marked.parseInline(text)}</td>
+      `
+      }).join('\n')}</tr>
+    `
+    }).join('\n')
+
     return `
    <div class="bg-white p-2.5 rounded-xl shadow-lg shadow-slate-300/10 my-3">
     <div class="overflow-x-auto py-4">
