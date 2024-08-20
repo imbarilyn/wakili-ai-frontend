@@ -142,7 +142,7 @@ const sendRequest = ()=>{
 
     <div class="w-full flex">
         <textarea
-          class="px-4 pt-3 overflow-hidden w-full grow bg-transparent border-none focus:outline-none resize-none"
+          class="px-4 pt-3 hover:cursor-text overflow-hidden w-full grow bg-transparent border-none focus:outline-none resize-none"
           placeholder="How can Wakili help you today?"
           v-model="userInput"
           ref="textAreaRef"
@@ -153,10 +153,10 @@ const sendRequest = ()=>{
     </textarea>
     </div>
 
-    <div class="absolute bottom-0 right-2 pb-2 lg:pb-4">
-      <button class="btn btn-sm btn-ghost btn-circle me-2">
-        <span class="material-icons-outlined !text-xl">mic</span>
-      </button>
+    <div class="absolute -bottom-2 flex justify-end p-4 lg:pb-4 w-full">
+<!--      <button class="btn btn-sm btn-ghost btn-circle me-2">-->
+<!--        <span class="material-icons-outlined !text-xl">mic</span>-->
+<!--      </button>-->
       <button
         class="btn btn-sm btn-ghost normal-case btn-circle"
         :disabled="props.isGenerating || !hasText"
