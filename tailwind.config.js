@@ -20,6 +20,9 @@ export default {
         'secondary-color-dark': "",
         'secondary-color-dark-hover': "",
         'tertiary-color': "#B9ED79",
+        'emerald': {
+          300: '#B9ED79',
+        }
       },
       fontFamily: {
         'poppins': ['Poppins Regular', 'Ubuntu', 'sans-serif'],
@@ -29,7 +32,17 @@ export default {
         'poppins-extra-light': ['Poppins Extralight', 'Ubuntu', 'san-serif', 'serif'],
         'poppins-thin': ['Poppins Thin', 'Ubuntu', 'san-serif', 'serif'],
         'poppins-semi-bold': ['Poppins Semibold', 'Ubuntu', 'san-serif', 'serif'],
-        'poppins-extra-bold': ['Poppins Extrabold', 'Ubuntu', 'san-serif', 'serif']
+        'poppins-extra-bold': ['Poppins Extrabold', 'Ubuntu', 'san-serif', 'serif'],
+        'sf-pro': ['SF Pro Regular', 'Ubuntu', 'sans-serif'],
+        'sf-pro-medium': ['SF Pro Medium', 'Ubuntu', 'sans-serif'],
+        'sf-pro-bold': ['SF Pro Bold', 'Ubuntu', 'sans-serif'],
+        'sf-pro-italic': ['SF Pro Italic', 'Ubuntu', 'sans-serif'],
+        'sf-pro-thin-italic': ['SF Pro Thin Italic', 'Ubuntu', 'sans-serif'],
+        'sf-pro-light-italic': ['SF Pro Light Italic', 'Ubuntu', 'sans-serif'],
+        'sf-pro-ultralight': ['SF Pro Ultralight', 'Ubuntu', 'sans-serif'],
+        'sf-pro-semibold-italic': ['SF Pro Semibold Italic', 'Ubuntu', 'sans-serif'],
+        'sf-pro-heavy-italic': ['SF Pro Heavy Italic', 'Ubuntu', 'sans-serif'],
+
       },
     }
 
