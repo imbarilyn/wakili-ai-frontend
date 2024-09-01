@@ -60,6 +60,10 @@ const logout = ()=>{
   emits('logout')
 }
 
+const subscribePage = ()=>{
+  router.push({name: 'chat-subscription'})
+}
+
 
 </script>
 
@@ -73,16 +77,15 @@ const logout = ()=>{
       <div
         :class="[collapseSidebarOnLarge? 'w-[64px] duration-1000 overflow-y-hidden overflow-x-hidden' : 'duration-700']"
         class="relative w-64 flex h-full flex-col">
-<p>Hello</p>
         <div
           :class="[collapseSidebarOnLarge? 'w-[64px] duration-1000 overflow-y-hidden overflow-x-hidden' : 'duration-700']"
           class="fixed py-4 px-4 bg-secondary-color w-64 h-screen">
-          <div :class="[collapseSidebarOnLarge? ' right-2': '']">
-            <button class="btn btn-sm btn-ghost" @click="collapseonLarge">
+          <div :class="[collapseSidebarOnLarge? '': '']">
+            <button class="btn btn-sm btn-ghost" @click="collapseonLarge" :class="[collapseSidebarOnLarge? 'px-1': '']">
               <span class="material-icons-outlined text-main-color !text-2xl">menu</span>
             </button>
           </div>
-          <div class="relative pt-14 group">
+          <div class="relative pt-10 group">
             <button
               :class="[collapseSidebarOnLarge? 'btn-circle flex': 'delay-1000 overflow-hidden']"
               @mouseover ='showNewChat = true'
