@@ -149,7 +149,7 @@ const closeModal = ()=>{
   <h1 class="text-2xl font-semibold">Available Subscription Plans</h1>
 </div>
 
-    <!--    suubscription cards-->
+    <!--    subscription cards-->
 
    <SubscriptionPlan @purchase-plan = 'handlePurchase'/>
     <teleport to="body">
