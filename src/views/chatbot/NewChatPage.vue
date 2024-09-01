@@ -318,7 +318,7 @@ const renderer: RendererObject = {
   },
   listitem({task, checked, loose, text}: Tokens.ListItem) {
     return `
-    <li class="text-base-accent text-sm md:text-md">${marked.parseInline(text)}</li>
+    <li class="text-base-accent text-sm lg:text-lg md:text-md">${marked.parseInline(text)}</li>
   `
   },
   paragraph({text, pre}: Tokens.Paragraph) {
@@ -327,31 +327,31 @@ const renderer: RendererObject = {
   `
   },
   heading({text, depth: level}: Tokens.Heading) {
-    let cssClassLevel = 'text-lg my-2';
+    let cssClassLevel = '!text-emerald-300 text-lg my-2';
 
     switch (level) {
       case 1:
-        cssClassLevel = 'text-xl md:text-2xl my-2 text-tertiary-color'
+        cssClassLevel = '!text-emerald-300 text-xl md:text-2xl my-2'
         break
       case 2:
-        cssClassLevel = 'text-lg md:text-xl my-1.5 text-tertiary-color'
+        cssClassLevel = '!text-emerald-300  text-lg md:text-xl my-1.5 '
         break
       case 3:
-        cssClassLevel = 'text-sm md:text-lg my-1.5 text-tertiary-color'
+        cssClassLevel = '!text-emerald-300  text-sm md:text-lg my-1.5'
         break
       case 4:
-        cssClassLevel = 'text-xs md:text-base my-1 text-tertiary-color'
+        cssClassLevel = '!text-emerald-300  text-xs md:text-base my-1'
         break
       case 5:
-        cssClassLevel = 'text-xxs md:text-sm my-1 text-tertiary-color'
+        cssClassLevel = '!text-emerald-300  text-xxs md:text-sm my-1'
         break
       case 6:
-        cssClassLevel = 'text-xxxs md:text-xs my-0.5 text-tertiary-color'
+        cssClassLevel = ' text-xxxs md:text-xs my-0.5'
         break
     }
 
     return `
-    <h${level} class="${cssClassLevel} font-poppins-semi-bold text-base-accent">${text}</h${level}>
+    <h${level} class="${cssClassLevel} font-semibold text-base-accent text-emerald-300">${text}</h${level}>
   `
   },
   hr() {
@@ -371,7 +371,7 @@ const renderer: RendererObject = {
   },
   strong({text}: Tokens.Strong) {
     return `
-    <strong class="font-poppins-semi-bold my-2.5 text-sm md:text-md">${text}</strong>
+    <strong class="font-semi-bold my-2.5 text-sm md:text-lg">${text}</strong>
   `
   },
   codespan({text: code}: Tokens.Codespan) {
@@ -381,13 +381,13 @@ const renderer: RendererObject = {
 
     // we'll rather render this like in chatGPT
     return `
-    <code class="font-poppins-semi-bold my-1">&acute;${code}&acute;</code>
+    <code class="font-semi-bold my-1">&acute;${code}&acute;</code>
   `
   },
   em({text}: Tokens.Em) {
 
     return `
-    <em class="font-poppins-light my-1 text-sm md:text-md">${text}</em>
+    <em class="font-light my-1 text-sm md:text-md">${text}</em>
   `
   },
   del({text}: Tokens.Del) {
@@ -589,19 +589,19 @@ setTimeout(()=>{
 
 </script>
 <template>
-  <div class="relative min-h-full  w-full flex justify-center flex-1 max-w-screen-xl mx-auto overflow-y-auto"
+  <div class="relative min-h-full  w-full flex justify-center flex-1 lg:max-w-screen-xl lg:mx-auto"
   ref="conversationContainerRef">
-    <div class="w-full min-h-screen py-10  lg:py-14 flex flex-col">
-      <div class="sticky top-0">
+    <div class="w-full min-h-screen   lg:py-14 flex flex-col">
+      <div class="top-0 sticky z-40 bg-white pt-6 ">
         <div class="lg:hidden block z-40 sm:ps-4 pt-3">
           <button class="btn btn-sm" @click="expandSidebar">
             <span class="material-icons-outlined">menu</span>
           </button>
         </div>
-        <div class="max-w-4x">
-          <div class="flex justify-center w-full">
+        <div class="">
+          <div class="flex justify-center -z-10 w-full">
             <div class="flex justify-center backdrop-blur">
-              <img class="h-10 w-10" src="@/assets/images/justice_scale.png">
+              <img class="md:h-10 md:w-10  h-4 w-4" src="@/assets/images/justice_scale.png">
             </div>
             <div class="text-nowrap">
               <h1 class="text-main-color font-semibold text-3xl sm:text-4xl text-center">Wakili Ai</h1>
@@ -611,10 +611,10 @@ setTimeout(()=>{
         </div>
       </div>
 
-      <div class="relative w-full h-full lg:px-4 px-14">
+      <div class="relative w-full h-full  mx-auto md:ps-8 lg:ps-10">
         <Transition mode="out-in" name="slide-in">
             <template v-if="!appIsFetching">
-              <div>
+              <div class="px-2">
                 <ChatbotBubble
                   :key="1"
                   :chatbot-name="'Wakili Ai'"
@@ -626,7 +626,7 @@ setTimeout(()=>{
                 />
 
                 <div class="relative" v-if="!isPlanExpired">
-                  <div class="absolute z-10 h-64  w-full flex justify-center items-center ">
+                  <div class="absolute h-64  w-full flex justify-center items-center ">
                     <div class="fixed">
                       <img src="@/assets/images/justice_scale.png" class="h-20 w-20 opacity-50">
                     </div>
@@ -660,14 +660,14 @@ setTimeout(()=>{
             </template>
         </Transition>
       </div>
-      <div v-if="isBottom" class="py-4 bg-gradient-to-t from-main-color-light-color block"></div>
-      <div class="absolute bottom-0 left-0  right-0 lg:pb-6">
-            <div class="grid grid-cols">
+<!--      <div class="mb-14"></div>-->
+      <div v-if="isBottom" class="py-12 bg-gradient-to-t from-main-color-light-color block"></div>
+      <div class="fixed lg:ms-64 bottom-0 left-0  right-0 lg:pb-6 bg-white">
+            <div class="w-full grid grid-cols">
               <div
-
-                class="w-11/12 lg:w-10/12 mx-auto md:ms-10">
+                class=" w-11/12 lg:10/12 mx-auto">
                 <UserInput
-                  class="fixed bg-secondary-color z-10 mb-6"
+                  class="bg-secondary-color z-10 mb-6"
                   :disabled="false"
                   :isGenerating="isGeneratingResponses"
                   :placeholder="placeholder"
@@ -675,7 +675,7 @@ setTimeout(()=>{
               </div>
             </div>
       </div>
-      <div id="user-input-placeholder"></div>
+<!--      <div id="user-input-placeholder"></div>-->
     </div>
     <teleport to="body">
       <DialogModal
