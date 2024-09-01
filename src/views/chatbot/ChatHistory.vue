@@ -3,5 +3,8 @@
 </script>
 
 <template>
- <p>Chat History Page</p>
+  <div class="min-h-screen">
+    <p>Chat History Page</p>
+  </div>
+
 </template>
