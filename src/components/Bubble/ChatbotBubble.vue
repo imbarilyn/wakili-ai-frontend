@@ -51,7 +51,7 @@ console.log(props.chatbotMessage)
 
       <div v-html="props.chatbotMessage"
            v-if="hasText"
-           class="chat-bubble lg:w-10/12 w-11/12 text-md">
+           class="chat-bubble md:w-11/12 w-full  text-md">
       </div>
       <div
         v-else
