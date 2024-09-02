@@ -64,7 +64,9 @@ const subscribePage = ()=>{
   router.push({name: 'chat-subscription'})
 }
 
-
+const showSubscription = ref<boolean>(false)
+const showSettings = ref<boolean>(false)
+const showLogout = ref<boolean>(false)
 </script>
 
 
@@ -85,7 +87,7 @@ const subscribePage = ()=>{
               <span class="material-icons-outlined text-main-color !text-2xl">menu</span>
             </button>
           </div>
-          <div class="relative pt-10 group">
+          <div class="fixed pt-10 group">
             <button
               :class="[collapseSidebarOnLarge? 'btn-circle flex': 'delay-1000 overflow-hidden']"
               @mouseover ='showNewChat = true'
@@ -94,7 +96,7 @@ const subscribePage = ()=>{
               <span class="material-icons-outlined text-white" >add</span>
               <span class="text-white font-normal" v-if="!collapseSidebarOnLarge">New Chat</span>
             </button>
-            <div class="absolute left-64 bg-main-color font-md text-white rounded-lg whitespace-pre drop-shadow-lg px-0 py-0 w-0 group-hover:px-2 group-hover:py-2 group-hover:left-14 group-hover:duration-700 group-hover:w-fit  " v-if="collapseSidebarOnLarge && collapseSidebarOnLarge">
+            <div class="absolute left-64 bg-main-color font-md text-white rounded-lg whitespace-pre drop-shadow-lg px-0 py-0 w-0 group-hover:px-2 group-hover:py-2 group-hover:left-14  group-hover:duration-700 group-hover:w-fit  " v-if="collapseSidebarOnLarge">
               <p>New Chat</p>
             </div>
           </div>
@@ -103,48 +105,62 @@ const subscribePage = ()=>{
           </div>
 
             <div class="absolute bottom-6 flex flex-col w-52">
-              <div class="relative group flex flex-col py-3">
+              <div class="relative  group flex flex-col py-3">
                 <button
                   @click="subscribePage"
+                  @mouseover="showSubscription=true"
+                  @mouseleave="showSubscription=false"
                   :class="[collapseSidebarOnLarge? 'btn-circle btn-ghost flex bg-transparent justify-center text-sm': '']"
                   class="btn btn-sm flex duration-500 justify-start mt-2 bg-main-color">
-                  <span class="material-icons-outlined text-white" :class="[collapseSidebarOnLarge? 'text-blue-950': '']">subscriptions</span>
+                  <span class="material-icons-outlined text-white" :class="[collapseSidebarOnLarge? 'text-main-color': 'text-white']">subscriptions</span>
                   <span class="text-white font-normal" v-if="!collapseSidebarOnLarge">Subscriptions</span>
                 </button>
                 <div
                   :class="[!collapseSidebarOnLarge?'hidden': '']"
-                  class="absolute w-0 top-1 z-30 left-52 text-white  bg-main-color rounded-lg px-0 py-0 group-hover:px-2 group-hover:py-2 group-hover:duration-700 group-hover:left-14 group-hover:w-fit">
+                  class="absolute w-0 top-1 z-30 left-52 text-white  bg-main-color rounded-lg px-0 py-0 group-hover:px-2 group-hover:py-2 group-hover:duration-700 group-hover:left-14 group-hover:w-fit" v-if="showSubscription">
                   <p class="text-nowrap text-sm">Subscription</p>
                 </div>
               </div>
-              <div class="relative flex-col flex group" >
-                <button
-                  :class="[collapseSidebarOnLarge? 'btn-circle btn-ghost flex bg-transparent justify-center text-sm': '']"
-                  class="btn btn-sm flex justify-start bg-main-color hover:bg-gray-400 duration-500">
-                  <span class="material-icons-outlined text-white" :class="[collapseSidebarOnLarge? 'text-blue-950': '']">settings</span>
-                  <span class="text-white font-normal" v-if="!collapseSidebarOnLarge">Settings</span>
-                </button>
-                <div
-                  :class="[!collapseSidebarOnLarge?'hidden': '']"
-                  class="absolute w-0 top-1 z-30 left-52 text-white  bg-main-color rounded-lg px-0 py-0 group-hover:px-2 group-hover:py-2 group-hover:duration-700 group-hover:left-14 group-hover:w-fit">
-                  <p class="text-nowrap text-sm">settings</p>
+              <div>
+                <div class="relative flex-col flex group" >
+                  <button
+                    @mouseover="showSettings = true"
+                    @mouseleave="showSettings = false"
+                    :class="[collapseSidebarOnLarge? 'btn-circle btn-ghost flex bg-transparent justify-center text-sm': '']"
+                    class="btn btn-sm flex justify-start bg-main-color hover:bg-gray-400 duration-500">
+                    <span class="material-icons-outlined" :class="[collapseSidebarOnLarge? 'text-main-color !text-xxs': 'text-white']">settings</span>
+                    <span class="text-white font-normal" v-if="!collapseSidebarOnLarge">Settings</span>
+                  </button>
+                  <div
+                    :class="[!collapseSidebarOnLarge?'hidden': '']"
+                    class="absolute w-0 top-1 z-30 left-52 text-white  bg-main-color rounded-lg px-0 py-0 group-hover:px-2 group-hover:py-2 group-hover:duration-700 group-hover:left-14 group-hover:w-fit" v-if="showSettings">
+                    <p class="text-nowrap text-sm">settings</p>
+                  </div>
                 </div>
+
               </div>
 
-              <div class="relative group flex flex-col">
-                <button
-                  @click="logout"
-                  :class="[collapseSidebarOnLarge? 'btn-circle btn-ghost flex bg-transparent justify-center text-sm': '']"
-                  class="btn btn-sm flex duration-500 justify-start mt-2 bg-main-color">
-                  <span class="material-icons-outlined text-white hover:text-main-color" :class="[collapseSidebarOnLarge? 'text-blue-950': '']">logout</span>
-                  <span class="text-white font-normal" v-if="!collapseSidebarOnLarge">Logout</span>
-                </button>
-                <div
-                  :class="[!collapseSidebarOnLarge?'hidden': '']"
-                  class="absolute w-0 top-1 z-30 left-52 text-white  bg-main-color rounded-lg px-0 py-0 group-hover:px-2 group-hover:py-2 group-hover:duration-700 group-hover:left-14 group-hover:w-fit">
-                  <p class="text-nowrap text-sm">Log out</p>
+              <div class="relative flex flex-col">
+                <div class="relative group flex flex-col">
+                  <button
+                    @click="logout"
+                    @mouseover="showLogout = true"
+                    @mouseleave="showLogout = false"
+                    :class="[collapseSidebarOnLarge? 'btn-circle btn-ghost flex bg-transparent justify-center text-sm': '']"
+                    class="btn btn-sm flex duration-500 justify-start mt-2 bg-main-color">
+                    <span class="material-icons-outlined  hover:text-main-color" :class="[collapseSidebarOnLarge? 'text-main-color': 'text-white']">logout</span>
+                    <span class="text-white font-normal" v-if="!collapseSidebarOnLarge">Logout</span>
+                  </button>
+                  <div
+                    :class="[!collapseSidebarOnLarge?'hidden': '']"
+                    class="absolute w-0 top-1 z-30 left-52 text-white  bg-main-color rounded-lg px-0 py-0 group-hover:px-2 group-hover:py-2 group-hover:duration-700 group-hover:left-14 group-hover:w-fit" v-if="showLogout">
+                    <p class="text-nowrap text-sm">Log out</p>
+                  </div>
                 </div>
+
               </div>
+
+
             </div>
           <div class="absolute bottom-0 flex" v-if="!collapseSidebarOnLarge">
             <span class="text-xs text-center" >2009-{{currentYear()}} Powered by Mzawadi</span>
@@ -196,6 +212,13 @@ const subscribePage = ()=>{
                           <p>History section</p>
                         </div>
                         <div class="absolute bottom-6 flex flex-col w-52">
+                          <button
+                            @click="subscribePage"
+                            :class="[collapseSidebarOnLarge? 'btn-circle btn-ghost flex bg-transparent justify-center text-sm': '']"
+                            class="btn btn-sm flex duration-500 justify-start mt-2 bg-main-color">
+                            <span class="material-icons-outlined text-white" :class="[collapseSidebarOnLarge? 'text-blue-950': '']">subscriptions</span>
+                            <span class="text-white font-normal" v-if="!collapseSidebarOnLarge">Subscription</span>
+                          </button>
 
                             <button class="btn btn-sm flex justify-start bg-main-color hover:bg-gray-400">
                               <span class="material-icons-outlined text-white">settings</span>
@@ -203,7 +226,7 @@ const subscribePage = ()=>{
                             </button>
 
 
-                          <button class="btn btn-sm flex justify-start mt-2 bg-main-color"
+                          <button class="btn btn-sm flex justify-start bg-main-color"
                           @click="logout">
                             <span class="material-icons-outlined text-white hover:text-main-color">logout</span>
                             <span class="text-white font-normal">Logout</span>

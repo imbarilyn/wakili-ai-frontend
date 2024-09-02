@@ -601,7 +601,7 @@ setTimeout(()=>{
         <div class="">
           <div class="flex justify-center -z-10 w-full">
             <div class="flex justify-center backdrop-blur">
-              <img class="md:h-10 md:w-10  h-4 w-4" src="@/assets/images/justice_scale.png">
+              <img class="w-10  h-10" src="@/assets/images/justice_scale.png">
             </div>
             <div class="text-nowrap">
               <h1 class="text-main-color font-semibold text-3xl sm:text-4xl text-center">Wakili Ai</h1>
