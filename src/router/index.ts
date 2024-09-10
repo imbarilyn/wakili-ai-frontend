@@ -59,11 +59,11 @@ import { useAuthStore } from '@/stores'
         },
         {
           name: 'chat-history',
-          path: '/:chat',
-          component: ()=>import('../views/chatbot/ChatHistory.vue'),
+          path: '/chat-history/:conversationId',
+          component: ()=>import('../views/chatbot/ChatHistoryPage.vue'),
           props: (route: any)=>{
             return{
-              chat: route.params.chat
+              conversationId: route.params.chat
             }
           }
 
