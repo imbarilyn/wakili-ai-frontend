@@ -1,8 +1,10 @@
 <script lang="ts" setup>
-import { useAuthStore, useChatbotStore, useNotificationsStore } from '@/stores'
+import { type ChatHistoryTitle, useAuthStore, useChatbotStore, useNotificationsStore } from '@/stores'
 import { useRouter } from 'vue-router'
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ref, watch } from 'vue'
+import ChatHistory from '@/views/chatbot/ChatHistory.vue'
+import moment from 'moment'
 
 
 
@@ -15,7 +17,11 @@ const currentYear = ()=>{
 }
 
 const newChat = ()=>{
-  window.location.href = '/'
+  chatbotStore.setAppIsFetching(true)
+  setTimeout(()=>{
+    window.location.href = '/'
+  }, 1000)
+
   // router.push({
   //   name: 'new-chat',
   //   params: {chat: 'new-chat'}

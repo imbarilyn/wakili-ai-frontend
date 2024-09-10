@@ -15,10 +15,9 @@ const authStore = useAuthStore()
 const props =  defineProps<UserBubbleProps>()
 
 const iconName= computed(()=>{
-  // console.log(authStore.getUserInfo()?.firstName.substring(0,2).toUpperCase())
+  console.log(authStore.getUserInfo()?.firstName.substring(0,2).toUpperCase())
   return authStore.getUserInfo()?.firstName.substring(0,2).toUpperCase()
 })
-// const meso = ref("<span style='color: red'>I love you!</span>")
 </script>
 
 
