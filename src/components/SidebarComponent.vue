@@ -73,6 +73,42 @@ const subscribePage = ()=>{
 const showSubscription = ref<boolean>(false)
 const showSettings = ref<boolean>(false)
 const showLogout = ref<boolean>(false)
+
+
+chatbotStore.getChatHistoryTitles()
+  .then((resp)=>{
+    if(resp.result == 'ok'){
+      chatbotStore.chatHistoryTitle = resp.data
+    }
+  })
+
+const groupChatbyDate = () => {
+  console.log(chatbotStore.chatHistoryTitle)
+  const grouped = chatbotStore.chatHistoryTitle.reduce(
+    (acc, chat) => {
+      let date = moment(chat.createdAt).toISOString()
+      let now = moment()
+      if (now.isSame(date, 'day')) {
+        date = 'Today'
+      } else if (now.subtract(1, 'days').isSame(date, 'day')) {
+        date = 'Yesterday'
+      } else if (now.subtract(1, 'weeks').isBefore(date)) {
+        date = 'Previous 7 Days'
+      } else {
+        date = moment(chat.createdAt).format('MMMM-YYYY')
+      }
+      if (!acc[date]) {
+        acc[date] = []
+      }
+      acc[date].push(chat)
+      return acc
+    },
+    {} as Record<string, ChatHistoryTitle[]>
+  )
+  console.log(grouped)
+  return grouped
+}
+
 </script>
 
 
@@ -93,7 +129,7 @@ const showLogout = ref<boolean>(false)
               <span class="material-icons-outlined text-main-color !text-2xl">menu</span>
             </button>
           </div>
-          <div class="fixed pt-10 group">
+          <div class="pt-10 group">
             <button
               :class="[collapseSidebarOnLarge? 'btn-circle flex': 'delay-1000 overflow-hidden']"
               @mouseover ='showNewChat = true'
@@ -106,8 +142,19 @@ const showLogout = ref<boolean>(false)
               <p>New Chat</p>
             </div>
           </div>
-          <div v-if="!collapseSidebarOnLarge">
-            History
+          <div v-if="!collapseSidebarOnLarge && chatbotStore.chatHistoryTitle" class="overflow-y-auto max-h-[480px] mt-4">
+            <div v-for="(chats, date) in groupChatbyDate()" :key="date">
+              <h1 class="font-bold sticky top-0 backdrop-blur pb-2">{{date}}</h1>
+              <div v-for="chat in chats" :key="chat.id" class="px-2">
+                <ChatHistory
+                  :conversationId = "chat.conversationId"
+                  :createdAt = "chat.createdAt"
+                  :title="chat.title"
+                  :content="chat.content"
+                  :id="chat.id"
+                />
+              </div>
+            </div>
           </div>
 
             <div class="absolute bottom-6 flex flex-col w-52">
@@ -176,7 +223,7 @@ const showLogout = ref<boolean>(false)
       </div>
     </div>
     <div>
-      <TransitionRoot as="template" :show="!chatbotStore.isCollapsed" class="duration 500 block lg:hidden " id="sidebar">
+      <TransitionRoot as="template" :show="!chatbotStore.isCollapsed" class="duration 500 block lg:hidden" id="sidebar">
         <Dialog class="relative z-50" @close="closeSidebar">
           <div class="fixed inset-x-0  overflow-hidden">
             <div class="absolute inset-0 overflow-hidden">
@@ -190,8 +237,8 @@ const showLogout = ref<boolean>(false)
                                  leave="transform transition ease-in-out duration-500 sm:duration-700"
                                  leave-from="translate-x-0"
                                  leave-to="-translate-x-full">
-                  <DialogPanel class="w-64 pointer-events-auto relative overflow-x-auto" id="SidebarDialog">
-                    <div class="flex h-full flex-col overflow-y-scroll bg-secondary-color py-4 shadow-xl">
+                  <DialogPanel class="w-64 pointer-events-auto h-screen relative top-0 bottom-0 overflow-y-hidden" id="SidebarDialog">
+                    <div class="flex h-screen flex-col overflow-y-auto bg-secondary-color py-4 shadow-xl">
                       <div class="px-2 sm:px-4">
                         <TransitionChild as="template" enter="ease-in-out duration 500"  enter-from="opacity-0" leave="ease-in-out duration 500" leave-from="opacity-100">
                           <div class="" >
@@ -204,7 +251,7 @@ const showLogout = ref<boolean>(false)
                         <!--                      <DialogTitle class="text-base font-semibold leading-6 text-gray-900">Panel title</DialogTitle>-->
                       </div>
                       <!--                    sidebar content goes here-->
-                      <div class="relative pt-6 flex-1 px-2 sm:px-4">
+                      <div class="pt-6 flex-1 px-2 sm:px-4">
                         <div class="relative">
                           <div>
                             <button class="btn btn-sm btn-ghost rounded-full bg-main-color" @click.stop="newChat" >
@@ -215,7 +262,20 @@ const showLogout = ref<boolean>(false)
 
                         </div>
                         <div>
-                          <p>History section</p>
+                          <div v-if="chatbotStore.chatHistoryTitle" class="overflow-y-auto max-h-[480px] mt-4">
+                            <div v-for="(chats, date) in groupChatbyDate()" :key="date">
+                              <h1 class="font-bold text-lg sticky top-0 backdrop-blur pb-2">{{date}}</h1>
+                              <div v-for="chat in chats" :key="chat.id">
+                                <ChatHistory
+                                  :conversationId = "chat.conversationId"
+                                  :createdAt = "chat.createdAt"
+                                  :title="chat.title"
+                                  :content="chat.content"
+                                  :id="chat.id"
+                                />
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         <div class="absolute bottom-6 flex flex-col w-52">
                           <button
@@ -254,15 +314,3 @@ const showLogout = ref<boolean>(false)
       </TransitionRoot>
     </div>
 </template>
-
-<!--<style scoped>-->
-
-<!--//@media(max-width: 1024px){-->
-<!--//  #sidebar{-->
-<!--//    display: none;-->
-<!--//  }-->
-<!--//-->
-<!--//}-->
-
-
-<!--</style>-->
