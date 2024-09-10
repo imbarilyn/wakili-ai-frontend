@@ -6,6 +6,7 @@ import ToastContainer from '@/components/toasts/ToastContainer.vue'
 import ToastAlert from '@/components/toasts/ToastAlert.vue'
 import SidebarComponent from '@/components/SidebarComponent.vue'
 import DialogModal from '@/components/toasts/DialogModal.vue'
+import LoadingPage from '@/components/LoadingPage.vue'
 
 
 
@@ -55,13 +56,21 @@ const signOut = ()=>{
 <template>
   <div class="w-full min-h-screen relative flex">
     <SidebarComponent @logout = 'logOut'/>
-    <RouterView #default="{ Component, route }">
-      <Transition>
-        <template v-if="Component">
-          <component :is="Component" :key="route.fullPath"  />
-        </template>
-      </Transition>
-    </RouterView>
+    <div class="w-full">
+      <div v-if = !chatbotStore.appIsFetching>
+        <RouterView #default="{ Component, route }">
+          <Transition>
+            <template v-if="Component">
+              <component :is="Component" :key="route.fullPath"  />
+            </template>
+          </Transition>
+        </RouterView>
+      </div>
+      <div v-else>
+        <LoadingPage/>
+      </div>
+    </div>
+
     <Teleport to="body">
       <ToastContainer v-if="notificationsStore.hasNotifications">
         <template v-for="notification in notificationsStore.getNotifications" :key="notification.id">
