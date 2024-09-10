@@ -628,7 +628,7 @@ setTimeout(()=>{
                 <div class="relative" v-if="!isPlanExpired">
                   <div class="absolute h-64  w-full flex justify-center items-center ">
                     <div class="fixed">
-                      <img src="@/assets/images/justice_scale.png" class="h-20 w-20 opacity-50">
+                      <img src="@/assets/images/justice_scale.png" class="h-20 w-20 opacity-10">
                     </div>
                   </div>
                   <ul>
@@ -642,7 +642,7 @@ setTimeout(()=>{
                                 chatbotStore.conversationId
 
                                 "
-                        :picture?="authStore.getUserInfo()?.picture"
+                        :picture="authStore.getUserInfo()?.picture"
                         :darkBgColor="darkBgColor"
                         :userInput = conv.message
                         :isTyping="conv.isTyping"
