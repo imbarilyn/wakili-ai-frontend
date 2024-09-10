@@ -43,9 +43,13 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   const chatHistoryTitle = ref<ChatHistoryTitle[]>([])
   const chatHistoryContent = ref<ChatHistoryContent[]>([])
   const getSubscriptionData = computed(()=>subscription?.value)
+  const activeHistoryButton = ref<string>()
 
     // setters
 
+  const setActiveHistoryButton = (value: string)=>{
+    return activeHistoryButton.value = value
+  }
   const setNewChat = (value: boolean)=>{
     return newChat.value = value
   }
@@ -61,6 +65,10 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
 
   const setSubscriptionData = (value: UserSubscriptionPayload[])=> {
   subscription.value = {...value}
+  }
+
+  const setAppIsFetching = (value: boolean) => {
+    return appIsFetching.value = value
   }
   //actions
   async function convoId(){
@@ -182,6 +190,25 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
     }
   }
 
+  async function displayChatHistoryContent(convId: string) {
+    const notification = useNotificationsStore()
+    try {
+      const response = await fetch(`${BASE_URL}/api/chat-history/chats/${convId}/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        mode: 'cors'
+      })
+      const resp = await response.json()
+      console.log(resp)
+      return resp
+    } catch (error) {
+      console.log(error)
+      notification.addNotification('There is an error fetching chat history', 'error')
+    } finally {
+      console.log('finally')
+    }
   }
 
 
@@ -198,7 +225,14 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       subscription,
       setSubscriptionData,
       getSubscriptionData,
-      purchaseSubscription
-
+      purchaseSubscription,
+      getChatHistoryTitles,
+      chatHistoryTitle,
+      chatHistoryContent,
+      displayChatHistoryContent,
+      appIsFetching,
+      setAppIsFetching,
+      setActiveHistoryButton,
+      activeHistoryButton
   }
 })
