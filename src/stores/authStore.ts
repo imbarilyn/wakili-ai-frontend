@@ -131,7 +131,7 @@ export const useAuthStore = defineStore('authStore', () => {
 
       const decode: any = jwtDecode(resp.token)
 
-      console.log('user data ', decode)
+      console.log('user data ', decode.email)
 
       tokenExpiry.value = decode.exp.toString()
 
@@ -140,7 +140,7 @@ export const useAuthStore = defineStore('authStore', () => {
         lastName: decode.lastName,
         phoneNo: decode.phoneNo,
         userId: decode.userId,
-        picture: decode.picture,
+        picture: decode.imageUrl,
         email: decode.email
       })
 
