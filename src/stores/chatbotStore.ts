@@ -15,6 +15,22 @@ export interface PurchaseSubscriptionPayload {
   subscriptionId: number,
 }
 
+export interface ChatHistoryTitle {
+  conversationId: string,
+  id: string,
+  title: string,
+  createdAt: string,
+  content: string
+}
+export interface ChatHistoryContent {
+  chatId: number,
+  content: string,
+  conversationId: string,
+  createdAt: string,
+  isUser: string
+
+}
+
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL as string
 export const  useChatbotStore = defineStore('chatbotStore', ()=>{
 
@@ -24,6 +40,8 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   const appIsFetching = ref<boolean>(false)
   const isCollapsed = ref<boolean>(true)
   const subscription = ref<UserSubscriptionPayload []>([])
+  const chatHistoryTitle = ref<ChatHistoryTitle[]>([])
+  const chatHistoryContent = ref<ChatHistoryContent[]>([])
   const getSubscriptionData = computed(()=>subscription?.value)
 
     // setters
@@ -130,7 +148,39 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       console.log('error', error)
       notification.addNotification('There is an error, please try again', 'error')
     }
+  }
 
+  async function getChatHistoryTitles() {
+    const authStore = useAuthStore()
+    const notification = useNotificationsStore()
+    const email = authStore.getUserInfo()?.email
+    console.log(email)
+    try {
+      const response = await fetch(`${BASE_URL}/api/chat-history/titles/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${authStore.getToken}`
+        },
+        mode: 'cors',
+        body: JSON.stringify({
+          email: email
+        })
+      })
+      const resp = await response.json()
+      if(resp.result == 'ok'){
+        console.log('Chat titles are available')
+        // notification.addNotification('Chat history fetched successfully', 'success')
+      }
+      else {
+        notification.addNotification('There is an error fetching chat history', 'error')
+      }
+      return resp
+    } catch (error) {
+      console.log(error)
+      // notification.addNotification('There is an error fetching chat history', 'error')
+    }
+  }
 
   }
 
