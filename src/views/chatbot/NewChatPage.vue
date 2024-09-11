@@ -346,12 +346,12 @@ const renderer: RendererObject = {
         cssClassLevel = '!text-emerald-300  text-xxs md:text-sm my-1'
         break
       case 6:
-        cssClassLevel = ' text-xxxs md:text-xs my-0.5'
+        cssClassLevel = ' !text-emerald-300  text-xxxs md:text-xs my-0.5'
         break
     }
 
     return `
-    <h${level} class="${cssClassLevel} font-semibold text-base-accent text-emerald-300">${text}</h${level}>
+    <h${level} class="${cssClassLevel} font-semibold text-base-accent text-emerald-300">${marked.parseInline(text)}</h${level}>
   `
   },
   hr() {
@@ -371,7 +371,7 @@ const renderer: RendererObject = {
   },
   strong({text}: Tokens.Strong) {
     return `
-    <strong class="font-semi-bold my-2.5 text-sm md:text-lg">${text}</strong>
+    <strong class="!text-emerald-300 font-semi-bold  my-2.5 text-sm md:text-lg">${text}</strong>
   `
   },
   codespan({text: code}: Tokens.Codespan) {
@@ -545,6 +545,7 @@ const isScrollable = ref(false)
 
 const scrollBottom =()=>{
   // if currentPosition is greater than 0 means the element is scrollable
+  // console.log('currentScrollPosition', currentScrollPosition)
   if(currentScrollPosition.value > 0){
     isScrollable.value = true
   }
@@ -560,6 +561,7 @@ const scrollBottom =()=>{
 
 
 document .addEventListener('scroll', ()=>{
+  console.log('adding event listener for scrolling')
   //getting the height of the <html> tag
   currentScrollPosition.value = document.documentElement.scrollTop
   // we  know the user is at tbe bottom if scrollTop of the div container is greater or equal to the scrollHeight - clientHeight
@@ -601,7 +603,7 @@ setTimeout(()=>{
         <div class="">
           <div class="flex justify-center -z-10 w-full">
             <div class="flex justify-center backdrop-blur">
-              <img class="w-10  h-10" src="@/assets/images/justice_scale.png">
+              <img class="w-10  h-10" src="../../../public/images/justice_scale.png">
             </div>
             <div class="text-nowrap">
               <h1 class="text-main-color font-semibold text-3xl sm:text-4xl text-center">Wakili Ai</h1>
@@ -628,7 +630,7 @@ setTimeout(()=>{
                 <div class="relative" v-if="!isPlanExpired">
                   <div class="absolute h-64  w-full flex justify-center items-center ">
                     <div class="fixed">
-                      <img src="@/assets/images/justice_scale.png" class="h-20 w-20 opacity-10">
+                      <img src="../../../public/images/justice_scale.png" class="h-20 w-20 opacity-10">
                     </div>
                   </div>
                   <ul>
@@ -675,7 +677,7 @@ setTimeout(()=>{
               </div>
             </div>
       </div>
-<!--      <div id="user-input-placeholder"></div>-->
+      <div id="user-input-placeholder"></div>
     </div>
     <teleport to="body">
       <DialogModal
