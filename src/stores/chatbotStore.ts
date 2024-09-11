@@ -44,6 +44,8 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   const chatHistoryContent = ref<ChatHistoryContent[]>([])
   const getSubscriptionData = computed(()=>subscription?.value)
   const activeHistoryButton = ref<string>()
+  const getActiveHistoryButton = computed(()=>activeHistoryButton.value)
+  const paymentCheckoutId = ref<string>()
 
     // setters
 
@@ -144,7 +146,8 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       const data = await response.json()
       console.log(data)
       if(data.result === 'ok'){
-        notification.addNotification('Subscription purchased successfully', 'success')
+        // notification.addNotification('Subscription purchased successfully', 'success')
+        paymentCheckoutId.value = data.checkoutId
         return data
       }
       else{
@@ -155,6 +158,27 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
     catch(error){
       console.log('error', error)
       notification.addNotification('There is an error, please try again', 'error')
+    }
+  }
+  // https://wakiliorgapi.mzawadi.com/api/payments/check-payment/
+
+  async function checkPaymentStatus (){
+    const authStore = useAuthStore()
+    try{
+      const response =  await fetch(`${BASE_URL}/api/payments/check-payment/?checkoutId=${paymentCheckoutId.value}`,{
+        method: 'GET',
+        headers:{
+          'Content-Type': 'application/json',
+          Authorization: `${authStore.getToken}`
+        },
+        mode:'cors'
+      })
+      const resp = await response.json()
+      console.log(resp)
+      return resp
+    }
+    catch(error){
+      console.log(error)
     }
   }
 
@@ -233,6 +257,8 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       appIsFetching,
       setAppIsFetching,
       setActiveHistoryButton,
-      activeHistoryButton
+      activeHistoryButton,
+      checkPaymentStatus,
+      getActiveHistoryButton
   }
 })
