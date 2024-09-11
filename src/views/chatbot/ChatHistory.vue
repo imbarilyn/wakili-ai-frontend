@@ -3,6 +3,7 @@
 
 import { type ChatHistoryTitle, useChatbotStore } from '@/stores'
 import { useRouter } from 'vue-router'
+import WakiliIcon from '@/components/BulletPoint.vue'
 
 const props = defineProps<ChatHistoryTitle>()
 const router = useRouter()
@@ -10,6 +11,8 @@ const chatbotStore = useChatbotStore()
 console.log(props)
 
 const viewChat = (conversationId: string) => {
+  chatbotStore.setActiveHistoryButton(props.id)
+  console.log('view chat', props)
   chatbotStore.setActiveHistoryButton(props.id)
   chatbotStore.displayChatHistoryContent(conversationId)
     .then((resp) => {
@@ -36,10 +39,13 @@ const viewChat = (conversationId: string) => {
 </script>
 
 <template>
-  <div class="grid grid-cols-12 btn btn-sm btn-ghost gap-1.5" @click="viewChat(props.conversationId)">
+  <div
+    :class="[chatbotStore.getActiveHistoryButton === props.id? 'bg-cadet-blue-300': '']"
+    class="grid grid-cols-12 btn btn-sm btn-ghost gap-1.5 my-1" @click="viewChat(props.conversationId)">
     <div
-      class="col-span-2" >
-      <img src="@/assets/images/justice_scale.png" class="h-5 w-5" alt="justice_scale">
+      class="col-span-2 flex flex-row items-center justify-center" >
+      <img src="../../../public/images/justice_scale.png" class="h-5 w-5" alt="justice_scale">
+<!--      <img src="/public/images/justice_scale%20(4).svg" />-->
       <!--     <span class="material-icons-outlined !text-sm text-neutral-600"> chat_bubble_outline </span>-->
     </div>
     <div class="col-span-10 flex flex-row justify-start items-center">
