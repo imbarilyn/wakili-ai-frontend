@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<ChatbotBubbleProps>(), {
   hasError: false
 })
 
-const chatbotStore = useChatbotStore()
+console.log("We are the chatbubble section**********",props.isTyping)
 
 const hasText = computed(()=>{
   return props.chatbotMessage.length > 0
@@ -38,7 +38,7 @@ console.log(props.chatbotMessage)
   <div class="chat chat-start pt-10">
     <div class="chat-image avatar">
       <div class="w-10 rounded-full">
-        <img src="@/assets/images/justice_scale.png" alt="wakili-ai" />
+        <img src="../../../public/images/justice_scale.png" alt="wakili-ai" />
 
       </div>
     </div>
@@ -48,18 +48,36 @@ console.log(props.chatbotMessage)
     </div>
 <!--    Chatbubble div-->
     <div>
+      <div  class="relative chat-bubble md:w-11/12 w-full text-sm md:text-lg flex flex-col">
+        <div v-html="props.chatbotMessage"></div>
+        <div v-if="!hasText"
+          class="chat-bubble w-10/12">
+          <span class="loading loading-ball loading-lg"></span>
+        </div>
+        <div v-if="props.isTyping && hasText">
+          <BulletPoint fill="#B9ED79" class="ml-2"></BulletPoint>
+        </div>
+        </div>
 
-      <div v-html="props.chatbotMessage"
-           v-if="hasText"
-           class="chat-bubble md:w-11/12 w-full  text-md">
-      </div>
-      <div
-        v-else
-           class="chat-bubble w-10/12">
-        <span class="loading loading-ball loading-lg"></span>
-      </div>
+<!--      <div v-html="props.chatbotMessage"-->
+<!--           v-if="hasText"-->
+<!--           class="chat-bubble md:w-11/12 w-full text-sm md:text-lg">-->
+<!--      </div>-->
+<!--      <div-->
+<!--        v-if="props.isTyping"-->
+<!--           class="chat-bubble w-10/12">-->
+<!--        <span><BulletPoint fill="#B9ED79"></BulletPoint></span>-->
+<!--        -->
+<!--      </div>-->
     </div>
 
     <div class="chat-footer opacity-50">Delivered</div>
   </div>
 </template>
+
+<style scoped>
+
+
+
+
+</style>
