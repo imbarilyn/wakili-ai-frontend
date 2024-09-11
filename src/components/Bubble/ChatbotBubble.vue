@@ -2,6 +2,7 @@
 
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
 import { useChatbotStore} from '@/stores'
+import BulletPoint from '@/components/BulletPoint.vue'
 
 export interface ChatbotBubbleProps {
   chatbotName?: string
