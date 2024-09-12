@@ -46,8 +46,13 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   const activeHistoryButton = ref<string>()
   const getActiveHistoryButton = computed(()=>activeHistoryButton.value)
   const paymentCheckoutId = ref<string>()
+  const isResponseGenerating = ref<boolean>(false)
 
     // setters
+
+  const setIsResponseGenerating = (value: boolean)=>{
+    return isResponseGenerating.value = value
+  }
 
   const setActiveHistoryButton = (value: string)=>{
     return activeHistoryButton.value = value
@@ -259,6 +264,8 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       setActiveHistoryButton,
       activeHistoryButton,
       checkPaymentStatus,
-      getActiveHistoryButton
+      getActiveHistoryButton,
+      setIsResponseGenerating,
+      isResponseGenerating
   }
 })
