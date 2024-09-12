@@ -490,6 +490,7 @@ socket.on('message', (response)=>{
     const aiResponseArray = conversation.value.filter((convo)=> !convo.isUser)
     const currentAiMessageObj = aiResponseArray[aiResponseArray.length - 1]
     currentAiMessageObj.message = currMessage
+    chatbotStore.setIsResponseGenerating(true)
     console.log(conversation.value)
 
     // if the end of stream is reached, stop typing and clear the message container
@@ -497,6 +498,7 @@ socket.on('message', (response)=>{
       console.log('end of stream')
       isGeneratingResponses.value = false
       currentAiMessageObj.isTyping = false
+      chatbotStore.setIsResponseGenerating(false)
       mesRes.value = ''
     }
   })
