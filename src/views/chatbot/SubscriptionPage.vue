@@ -87,7 +87,6 @@ const subscribeToPlan = ()=>{
             openSubscriptionModal.value = false
           }
           console.log(response)
-
         })
         .catch((error) => {
           console.log(error)
@@ -160,10 +159,18 @@ const directChatPage = ()=>{
     <div class="top-0 sticky z-50 backdrop-blur">
     <div class="grid grid-cols-3 w-full">
       <div class="md:col-span-2 col-span-3">
-        <h1 class="!text-2xl font-bold capitalize" v-if="firstName?.substring(firstName.length-2, firstName.length-1) !== 's'">{{firstName}}'s  Subscription</h1>
-        <h1 v-else class="!text-4xl capitalize">{{firstName}}' Subscription</h1>
+        <div class="flex flex-row items-center gap-">
+          <div class="flex items-center btn btn-sm btn-ghost" @click="directChatPage">
+            <span class="material-icons !text-2xl font-bold">arrow_back</span>
+          </div>
+          <div>
+            <h1 class="!text-2xl font-bold capitalize" v-if="firstName?.substring(firstName.length-2, firstName.length-1) !== 's'">{{firstName}}'s  Subscription</h1>
+            <h1 v-else class="!text-4xl capitalize">{{firstName}}' Subscription</h1>
+          </div>
+        </div>
+
       </div>
-      <div class="md:col-span-1 col-span-2 flex md:justify-end">
+      <div class="md:col-span-1 flex md:justify-end sm:pt-2">
         <button class="bg-main-color text-white rounded-lg btn btn-sm">
           <span class="material-icons-outlined">change_circle</span>
           <span>Change Plan</span>
@@ -187,8 +194,7 @@ const directChatPage = ()=>{
 </div>
 
     <!--    subscription cards-->
-
-   <SubscriptionPlan @purchase-plan = 'handlePurchase'/>
+    <SubscriptionPlan @purchase-plan = 'handlePurchase'/>
     <teleport to="body">
       <DialogModal
         :is-open="openSubscriptionModal"
@@ -222,6 +228,47 @@ const directChatPage = ()=>{
             <button class="btn bg-main-color text-white w-full" @click="subscribeToPlan">
               <span v-if="!purchaseLoading">Complete Purchase</span>
               <span class="loading loading-spinner loading-sm" v-else></span>
+            </button>
+          </div>
+        </template>
+      </DialogModal>
+    </teleport>
+    <teleport to="body">
+      <DialogModal
+        :is-open="paymentFail?.isPaid === 'Success'|| paymentFail?.isPaid === 'Fail'|| paymentFail?.isPaid === 'Processing'"
+        @closeModal="closeModal"
+      >
+        <template #title>
+          <div class="w-full flex justify-center">
+            <span
+              v-if="paymentFail?.isPaid === 'Success'"
+              class="material-icons text-green-600 !text-6xl">check_circle</span>
+            <span  v-else-if="paymentFail?.isPaid === 'Processing'" class="loading loading-bars loading-lg"></span>
+            <span v-else  class="material-icons text-rose-400 !text-6xl">cancel</span>
+
+          </div>
+        </template>
+
+        <template #body>
+          <div class="flex justify-center">
+            <p v-if="paymentFail?.isPaid === 'Fail'" class="text-center text-lg font-bold leading-relaxed">Transaction failed; {{paymentFail.description}}</p>
+            <p v-else-if="paymentFail?.isPaid === 'Processing'" class="text-lg font-bold leading-relaxed text-center">Please be patient as we process your transaction, thank you!</p>
+           <p v-else class="text-center text-lg font-bold">Your subscription was successful thank you for choosing Wakili Ai</p>
+          </div>
+        </template>
+
+        <template #footer>
+          <div class="w-full flex justify-center" v-if="paymentFail?.isPaid !=='Processing'">
+            <button
+              v-if="paymentFail?.isPaid === 'Fail'"
+              @click="closeTransactionFailedModal"
+              class="btn btn-sm btn-ghost btn-outline">
+              <span>Try Again</span>
+            </button>
+            <button
+              @click="directChatPage"
+              v-if="paymentFail.isPaid === 'Success'" class="btn btn-sm btn-ghost btn-outline px-8 bg-green-600 text-white">
+              <span>OK</span>
             </button>
           </div>
         </template>
