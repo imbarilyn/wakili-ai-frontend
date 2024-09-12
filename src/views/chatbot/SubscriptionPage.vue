@@ -86,13 +86,11 @@ const subscribeToPlan = ()=>{
           } else {
             openSubscriptionModal.value = false
           }
-
           console.log(response)
 
         })
         .catch((error) => {
           console.log(error)
-
         })
         .finally(() => {
           setTimeout(() => {
@@ -100,8 +98,6 @@ const subscribeToPlan = ()=>{
             // openSubscriptionModal.value = false
             subscriptionArray.value.splice(0, subscriptionArray.value.length)
           }, 1000)
-
-
         })
     } else {
       notificationsStore.addNotification('Please enter a valid phone number', 'error')
@@ -142,10 +138,18 @@ watch(
     phoneNo.value = value
   }
 )
-
+const closeTransactionFailedModal = ()=>{
+  paymentFail.value.isPaid = null
+}
 const closeModal = ()=>{
   openSubscriptionModal.value = false
   // subscriptionArray.value.splice(0, subscriptionArray.value.length)
+  // router.go(-1)
+}
+
+const directChatPage = ()=>{
+  console.log('I have paid!')
+  router.go(-1)
 }
 
 </script>
