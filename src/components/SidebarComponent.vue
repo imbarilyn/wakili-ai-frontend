@@ -108,6 +108,12 @@ const groupChatbyDate = () => {
   console.log(grouped)
   return grouped
 }
+watch(()=> chatbotStore.chatHistoryTitle, (value)=>{
+  if(value){
+    groupChatbyDate()
+  }
+})
+
 
 </script>
 

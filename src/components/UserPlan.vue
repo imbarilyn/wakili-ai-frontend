@@ -16,7 +16,7 @@ const props =withDefaults(defineProps<UserPlan>(),{
 
 
 <template>
-  <div>
+
     <div class="grid lg:grid-cols-4  grid-cols-2 w-full gap-3 pt-4">
       <div class="bg-main-color text-white rounded-lg p-4 flex">
         <div class="pe-4 flex items-center">
@@ -61,5 +61,5 @@ const props =withDefaults(defineProps<UserPlan>(),{
 
       </div>
     </div>
-  </div>
+
 </template>
