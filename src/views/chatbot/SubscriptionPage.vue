@@ -63,6 +63,25 @@ const subscribeToPlan = ()=>{
       chatbotStore.purchaseSubscription(subscriptionPayload)
         .then((response) => {
           if (response.result === 'ok') {
+            intervalId.value = setInterval(()=>{
+              chatbotStore.checkPaymentStatus()
+                .then((resp)=>{
+                  console.log(resp)
+                  paymentFail.value = {...resp}
+                  console.log(paymentFail.value)
+                  if(resp.isPaid === 'Success'){
+                    setTimeout(()=>{
+                      router.go(-1)
+                    },2000)
+                  }
+                  else{
+                    return
+                  }
+                })
+                .catch((error)=>{
+                  console.log(error)
+                })
+            }, 1000)
             return
           } else {
             openSubscriptionModal.value = false
