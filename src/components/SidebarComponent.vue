@@ -108,9 +108,14 @@ const groupChatbyDate = () => {
   console.log(grouped)
   return grouped
 }
-watch(()=> chatbotStore.chatHistoryTitle, (value)=>{
-  if(value){
-    groupChatbyDate()
+watch(()=> chatbotStore.isResponseGenerating, (value)=>{
+  if(!value){
+    chatbotStore.getChatHistoryTitles()
+      .then((resp)=>{
+        if(resp.result == 'ok'){
+          chatbotStore.chatHistoryTitle = resp.data
+        }
+      })
   }
 })
 
