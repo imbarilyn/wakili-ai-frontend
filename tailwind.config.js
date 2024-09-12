@@ -22,7 +22,21 @@ export default {
         'tertiary-color': "#B9ED79",
         'emerald': {
           300: '#B9ED79',
-        }
+        },
+        'cadet-blue': {
+          '50': '#f6f7f8',
+          '100': '#eaecef',
+          '200': '#dadde3',
+          '300': '#c0c7d0',
+          '400': '#a9b1be',
+          '500': '#8b93a6',
+          '600': '#798197',
+          '700': '#6d7288',
+          '800': '#5c6071',
+          '900': '#4c4f5c',
+          '950': '#31323a',
+        },
+
       },
       fontFamily: {
         'poppins': ['Poppins Regular', 'Ubuntu', 'sans-serif'],
