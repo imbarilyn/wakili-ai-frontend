@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<ChatbotBubbleProps>(), {
 })
 
 console.log("We are the chatbubble section**********",props.isTyping)
-
+const chatbotStore = useChatbotStore()
 const hasText = computed(()=>{
   return props.chatbotMessage.length > 0
 })
@@ -55,7 +55,7 @@ console.log(props.chatbotMessage)
           class="chat-bubble w-10/12">
           <span class="loading loading-ball loading-lg"></span>
         </div>
-        <div v-if="props.isTyping && hasText">
+        <div v-if="chatbotStore.isResponseGenerating && hasText">
           <BulletPoint fill="#B9ED79" class="ml-2"></BulletPoint>
         </div>
         </div>
