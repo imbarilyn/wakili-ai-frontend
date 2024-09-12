@@ -38,7 +38,7 @@ const iconName= computed(()=>{
       <span>{{authStore.getUserInfo()?.firstName}}</span>
       <time class="text-xs opacity-50">12:46</time>
     </div>
-    <div class="chat-bubble bg-secondary-color text-main-color" v-html="props.userInput"></div>
+    <div class="chat-bubble bg-secondary-color text-sm md:text-lg text-main-color" v-html="props.userInput"></div>
 <!--    <div class="chat-footer opacity-50">Seen at 12:46</div>-->
   </div>
 
