@@ -5,6 +5,8 @@ import DialogModal from '@/components/toasts/DialogModal.vue'
 import SubscriptionPlan from '@/components/SubscriptionPlan.vue'
 import { useField } from 'vee-validate'
 import UserPlan from '@/components/UserPlan.vue'
+import { useRouter } from 'vue-router'
+import WakiliIcon from '@/components/BulletPoint.vue'
 
 
 
@@ -13,6 +15,7 @@ const chatbotStore = useChatbotStore()
 const notificationsStore = useNotificationsStore()
 const firstName = authStore.getUserInfo()?.firstName
 const openSubscriptionModal = ref(false)
+const router = useRouter()
 interface Subscription {
   subscriptionId: number;
   price: string;
@@ -29,6 +32,17 @@ const handlePurchase = (subscriptionId: number, price: string, subscriptionName:
 
 const userPhoneNo = ref('')
 const  purchaseLoading = ref(false)
+const paymentFail = ref()
+let intervalId = ref()
+watch(()=>paymentFail.value, (value)=>{
+  console.log(paymentFail.value)
+  if(value?.isPaid === 'Success' || value?.isPaid === 'Fail'){
+    clearInterval(intervalId.value)
+  }
+})
+
+
+
 
 const subscribeToPlan = ()=>{
   if(!userPhoneNo.value){
