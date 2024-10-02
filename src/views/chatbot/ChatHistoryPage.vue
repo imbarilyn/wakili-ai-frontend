@@ -669,6 +669,9 @@ setTimeout(()=>{
                       :chatbot-message ="marked.parse(conv.message) as string"
                       :is-typing="conv.isTyping"
                       :chatbot-name="'Wakili Ai'"
+                      :original-message="conv.message"
+                      :key="conv.uniqueId"
+                      :is-copyable="index !== 0"
                     />
                   </template>
                 </ul>
