@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { useChatbotStore, type UserSubscriptionPayload, useNotificationsStore } from '@/stores'
+import { useChatbotStore, type AvailableSubscriptionPayload, useNotificationsStore } from '@/stores'
 import { computed, onMounted, ref } from 'vue'
 
 const chatbotStore = useChatbotStore()
@@ -14,12 +14,12 @@ const purchasePlan = (subscriptionId: number, price: string, subscriptionName: s
   emits('purchasePlan', subscriptionId, price, subscriptionName, duration)
 }
 
-const userSubscription = ref<UserSubscriptionPayload []>([])
+const availableSubscriptions = ref<AvailableSubscriptionPayload []>([])
  chatbotStore.getSubscription()
   .then((response)=>{
     console.log(response)
     if(response.result === 'success'){
-      userSubscription.value = response.data
+      availableSubscriptions.value = response.data
     }
     else{
       notificationStore.addNotification('There is an error retriving plans', 'error')
@@ -27,7 +27,7 @@ const userSubscription = ref<UserSubscriptionPayload []>([])
     }
   })
   .catch((error)=>{
-    console.log(error)
+    console.error(error)
     return
   })
 
@@ -37,9 +37,9 @@ const userSubscription = ref<UserSubscriptionPayload []>([])
 
 <template>
 
-<div class="py-16 grid lg:grid-cols-4  md:grid-cols-2 gap-4 grid-cols-1 w-full">
+<div class="py-16 grid lg:grid-cols-4  md:grid-cols-2 md:gap-4 gap-3 grid-cols-1 w-full">
 
-    <div v-for="plan in userSubscription" :key="plan.subscriptionId" class="gap-1 flex justify-center items-center">
+    <div v-for="plan in availableSubscriptions" :key="plan.subscriptionId" class="gap-1 flex justify-center items-center flex-1">
       <div class="card glass w-96 md:w-64 lg:w-96 text-white " :class="[plan.subscriptionName==='Weekly'? 'bg-secondary-color': 'bg-main-color']">
         <figure class="pt-2">
           <span class="material-icons-outlined pe-2 !text-2xl" :class="[plan.subscriptionName==='Weekly'? 'text-main-color': '']">star_border_purple500</span>
@@ -76,10 +76,4 @@ const userSubscription = ref<UserSubscriptionPayload []>([])
       </div>
     </div>
   </div>
-<!--  <div v-else>-->
-<!--    <p>Unable to fetch Plans</p>-->
-
-<!--  </div>-->
-
-
 </template>
