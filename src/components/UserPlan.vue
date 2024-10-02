@@ -17,20 +17,9 @@ const formattedsubscriptionEndDate = computed(()=>{
     second: '2-digit'
   })
 
-interface UserPlan {
-  subscription: string;
-  price: string;
-  duration: string;
-}
 
-const props =withDefaults(defineProps<UserPlan>(),{
-  subscription: 'No Subscription',
-  price: 'Kes. 0',
-  duration: '0'
 })
-
 </script>
-
 
 <template>
 
