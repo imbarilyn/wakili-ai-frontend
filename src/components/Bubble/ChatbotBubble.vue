@@ -24,9 +24,35 @@ const chatbotStore = useChatbotStore()
 const hasText = computed(()=>{
   return props.chatbotMessage.length > 0
 })
-// const hasCopyButton = computed(()=>{
-//   return props.isCopyable && props.chatbotMessage?.length > 0
-// })
+
+const hasCopyButton = computed(() => {
+  return props.isCopyable && props.chatbotMessage.length > 0
+})
+const isCopied = ref<boolean>(false)
+const copyChat = () => {
+  console.log('Original message', props.originalMessage)
+  // check if ClipboardAPI is supported
+  if (!navigator.clipboard) {
+    return
+  } else {
+    if (navigator.clipboard && typeof navigator.clipboard.writeText !== 'function') {
+      alert('Your browser does not support clipboard feature, switch to a different browser')
+    } else {
+      try {
+        navigator.clipboard.writeText(props.originalMessage)
+        isCopied.value = true
+      } catch (error) {
+        alert('Failed to copy, please try again')
+      } finally {
+        setTimeout(() => {
+          isCopied.value = false
+        }, 3000)
+      }
+    }
+  }
+}
+
+
 
 // onMounted(()=>{
 //   console.log(props.chatbotMessage)
