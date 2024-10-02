@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAuthStore, useNotificationsStore } from '@/stores'
 
-export interface UserSubscriptionPayload {
+export interface AvailableSubscriptionPayload {
   subscriptionId: number,
   subscriptionName: string,
   duration:string,
@@ -28,8 +28,21 @@ export interface ChatHistoryContent {
   conversationId: string,
   createdAt: string,
   isUser: string
-
 }
+
+export interface UserSubscription {
+  cost: string
+  subscriptionDuration: string
+  subscriptionEndDate: string
+  subscriptionName: string
+  subscriptionStatus: string
+  userId: string
+  isSubscribed: boolean
+}
+
+
+
+
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL as string
 export const  useChatbotStore = defineStore('chatbotStore', ()=>{
@@ -39,20 +52,30 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   const isSubscription = ref<boolean>(true)
   const appIsFetching = ref<boolean>(false)
   const isCollapsed = ref<boolean>(true)
-  const subscription = ref<UserSubscriptionPayload []>([])
+  const availableSubscription = ref<AvailableSubscriptionPayload []>([])
   const chatHistoryTitle = ref<ChatHistoryTitle[]>([])
   const chatHistoryContent = ref<ChatHistoryContent[]>([])
-  const getSubscriptionData = computed(()=>subscription?.value)
+  const getAvailableSubscription = computed(()=>availableSubscription?.value)
   const activeHistoryButton = ref<string>()
   const getActiveHistoryButton = computed(()=>activeHistoryButton.value)
   const paymentCheckoutId = ref<string>()
   const isResponseGenerating = ref<boolean>(false)
+  const isOpenPositiveFeedback = ref({
+    isOpen: false
+  })
+
+
 
     // setters
 
   const setIsResponseGenerating = (value: boolean)=>{
     return isResponseGenerating.value = value
   }
+  const setPositiveFeedback = (value: boolean)=>{
+    return isOpenPositiveFeedback.value.isOpen = value
+
+  }
+
 
   const setActiveHistoryButton = (value: string)=>{
     return activeHistoryButton.value = value
@@ -70,8 +93,8 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
     return isSubscription.value = value
   }
 
-  const setSubscriptionData = (value: UserSubscriptionPayload[])=> {
-  subscription.value = {...value}
+  const setSubscriptionData = (value: AvailableSubscriptionPayload[])=> {
+  availableSubscription.value = {...value}
   }
 
   const setAppIsFetching = (value: boolean) => {
@@ -132,6 +155,9 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
     }
     catch(error){
       console.log('error', error)
+    }
+    finally {
+      console.log('finally')
     }
   }
 
@@ -225,7 +251,7 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       const response = await fetch(`${BASE_URL}/api/chat-history/chats/${convId}/`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         mode: 'cors'
       })
@@ -239,6 +265,27 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       console.log('finally')
     }
   }
+const isErrorUserPlan = ref<boolean>(false)
+  async function getUserSubscription(){
+    const authStore = useAuthStore()
+    try{
+      const response = await fetch(`${BASE_URL}/api/subscriptions/get-user-subscriptions/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${authStore.getToken}`
+        },
+        mode: 'cors'
+      })
+      return await response.json()
+    }
+    catch(error){
+      isErrorUserPlan.value = true
+      console.error(error)
+    }
+  }
+
+
 
 
     return{
@@ -251,9 +298,9 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       isCollapsed,
       setCollapse,
       getSubscription,
-      subscription,
+      subscription: availableSubscription,
       setSubscriptionData,
-      getSubscriptionData,
+      getSubscriptionData: getAvailableSubscription,
       purchaseSubscription,
       getChatHistoryTitles,
       chatHistoryTitle,
@@ -266,6 +313,12 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       checkPaymentStatus,
       getActiveHistoryButton,
       setIsResponseGenerating,
-      isResponseGenerating
-  }
+      isResponseGenerating,
+      getUserSubscription,
+      isErrorUserPlan,
+      isOpenPositiveFeedback,
+      setPositiveFeedback
+
+
+    }
 })
