@@ -51,7 +51,7 @@ const authStore = useAuthStore()
 const chatbotStore = useChatbotStore()
 const notification = useNotificationsStore()
 const appIsFetching = ref(false)
-const conversation =ref<Conversation []>([])
+const conversation = ref<Conversation []>([])
 const placeholder = ref<string>('How can Wakili help you today?')
 const isGeneratingResponses = ref(false)
 const chatTextColor = ref('text-white')
@@ -59,20 +59,20 @@ const mesRes = ref('')
 const conversationContainerRef = ref<HTMLDivElement | null>(null)
 
 
-socket.on('connect', ()=>{
+socket.on('connect', () => {
   console.log('connected successfully')
 })
 
 //  any errrors associated with the socket connection
-socket.on('error', (err)=>{
-  console.log('error connecting to the server', err )
+socket.on('error', (err) => {
+  console.log('error connecting to the server', err)
 })
 
 const isPlanExpired = ref(false)
 
 
 // subscriptions
-socket.on('payment_required', (message)=>{
+socket.on('payment_required', (message) => {
   chatbotStore.setSubscription(false)
   console.log(message)
   isPlanExpired.value = true
@@ -219,11 +219,11 @@ const {darkBgColor, setColor } = colorGenerator(authStore.getUserInfo()?.firstNa
 //
 // create a custom description list renderer
 const renderer: RendererObject = {
-  link({href, title, text}: Tokens.Link) {
+  link({ href, title, text }: Tokens.Link) {
     return `<a target="_blank" class="link link-primary" href="${href}" title="${title}">${text}</a>`
   },
-  table({header: hd, rows, align}: Tokens.Table) {
-    const header = hd.map(({text, header}) => {
+  table({ header: hd, rows, align }: Tokens.Table) {
+    const header = hd.map(({ text, header }) => {
       return `
       <th class="text-base-content text-sm md:text-md">${marked.parseInline(text)}</th>
     `
@@ -231,7 +231,7 @@ const renderer: RendererObject = {
 
     const body = rows.map((row) => {
       return `
-      <tr>${row.map(({text, header}) => {
+      <tr>${row.map(({ text, header }) => {
         return `
         <td class="text-base-content text-sm md:text-md">${marked.parseInline(text)}</td>
       `
@@ -264,7 +264,7 @@ const renderer: RendererObject = {
   //   <td>${content}</td>
   // `
   // },
-  code({text: code, lang:language, codeBlockStyle, escaped}: Tokens.Code) {
+  code({ text: code, lang: language, codeBlockStyle, escaped }: Tokens.Code) {
     // return `
     //   <pre><div class="mockup-code my-3"><div class="px-4"><code>${code}</code></div></div></pre>
     // `;
@@ -287,12 +287,12 @@ const renderer: RendererObject = {
   `
     }
   },
-  list({ordered, start, loose, items}: Tokens.List) {
+  list({ ordered, start, loose, items }: Tokens.List) {
     console.log('items is -> ', items)
-    const body = items.map(({task, checked, loose, text}) => {
+    const body = items.map(({ task, checked, loose, text }) => {
       return `
       <li class="text-base-accent text-sm md:text-md">${marked.parseInline(text)}</li>
-      `;
+      `
     }).join('\n')
 
     if (ordered) {
@@ -316,18 +316,18 @@ const renderer: RendererObject = {
     `
     }
   },
-  listitem({task, checked, loose, text}: Tokens.ListItem) {
+  listitem({ task, checked, loose, text }: Tokens.ListItem) {
     return `
     <li class="text-base-accent text-sm lg:text-lg md:text-md">${marked.parseInline(text)}</li>
   `
   },
-  paragraph({text, pre}: Tokens.Paragraph) {
+  paragraph({ text, pre }: Tokens.Paragraph) {
     return `
     <p class="text-base-accent leading-relaxed text-sm md:text-md">${marked.parseInline(text)}</p>
   `
   },
-  heading({text, depth: level}: Tokens.Heading) {
-    let cssClassLevel = '!text-emerald-300 text-lg my-2';
+  heading({ text, depth: level }: Tokens.Heading) {
+    let cssClassLevel = '!text-emerald-300 text-lg my-2'
 
     switch (level) {
       case 1:
@@ -359,22 +359,22 @@ const renderer: RendererObject = {
     <hr class="my-4 border-neutral-200"/>
   `
   },
-  blockquote({text: quote}: Tokens.Blockquote) {
+  blockquote({ text: quote }: Tokens.Blockquote) {
     return `
     <blockquote class="my-4 border-l-4 border-neutral-200 pl-4">${quote}</blockquote>
   `
   },
-  image({href, title, text}: Tokens.Image) {
+  image({ href, title, text }: Tokens.Image) {
     return `
     <img src="${href}" alt="${text}" title="${title}" class="w-full"/>
   `
   },
-  strong({text}: Tokens.Strong) {
+  strong({ text }: Tokens.Strong) {
     return `
     <strong class="!text-emerald-300 font-semi-bold  my-2.5 text-sm md:text-lg">${text}</strong>
   `
   },
-  codespan({text: code}: Tokens.Codespan) {
+  codespan({ text: code }: Tokens.Codespan) {
     // return `
     //   <pre><div class="mockup-code"><div class="px-4"><code>${code}</code></div></div></pre>
     // `;
@@ -384,18 +384,18 @@ const renderer: RendererObject = {
     <code class="font-semi-bold my-1">&acute;${code}&acute;</code>
   `
   },
-  em({text}: Tokens.Em) {
+  em({ text }: Tokens.Em) {
 
     return `
     <em class="font-light my-1 text-sm md:text-md">${text}</em>
   `
   },
-  del({text}: Tokens.Del) {
+  del({ text }: Tokens.Del) {
     return `
     <del class="font-poppins-light my-1 text-sm md:text-md">${text}</del>
   `
   },
-  text({text, type}: Tokens.Text | Tokens.Escape | Tokens.Tag) {
+  text({ text, type }: Tokens.Text | Tokens.Escape | Tokens.Tag) {
     if (type === 'text') {
       return `
       <span class="text-md md:text-lg">${text}</span>
@@ -413,7 +413,6 @@ const renderer: RendererObject = {
 }
 
 
-
 marked.use({
   renderer,
   breaks: true,
@@ -424,13 +423,13 @@ marked.use({
 const handleUserInput = (
   value: string,
   formatted: string,
-  audioData?:{
+  audioData?: {
     audio: Blob,
     audioUrl: string
-})=>{
+  }) => {
   console.log(formatted)
   // create user message container
-  const userMessage= ref<Conversation>({
+  const userMessage = ref<Conversation>({
     message: formatted,
     isUser: true,
     uniqueId: _.uniqueId('user-'),
@@ -446,21 +445,20 @@ const handleUserInput = (
     message: '',
     isUser: false,
     uniqueId: _.uniqueId('ai-'),
-    isTyping:true,
+    isTyping: true
   })
 
   // push the ai-message to the conversation array
-  setTimeout(()=>{
+  setTimeout(() => {
     conversation.value.push(aiMessage.value)
   }, 500)
 
-  try{
+  try {
     socket.emit('message', {
-      message:formatted,
+      message: formatted,
       conversationId: chatbotStore.conversationId
     })
-  }
-  catch(e){
+  } catch (e) {
     scrollBottom()
     console.log(e)
     aiMessage.value.hasError = true
@@ -475,35 +473,35 @@ const handleUserInput = (
   }
 }
 
-socket.on('message', (response)=>{
+socket.on('message', (response) => {
   // console.log(response)
   // const parsedResponse = JSON.parse(response)
   mesRes.value += response.message
 })
 
-  watch(()=>mesRes.value,(value: string)=>{
-    if(!value){
-      return
-    }
-    const responseArray = value.split("~~~ENDOFSTREAM~~~")
-    const currMessage = responseArray[0]
-    const aiResponseArray = conversation.value.filter((convo)=> !convo.isUser)
-    const currentAiMessageObj = aiResponseArray[aiResponseArray.length - 1]
-    currentAiMessageObj.message = currMessage
-    chatbotStore.setIsResponseGenerating(true)
-    console.log(conversation.value)
+watch(() => mesRes.value, (value: string) => {
+  if (!value) {
+    return
+  }
+  const responseArray = value.split('~~~ENDOFSTREAM~~~')
+  const currMessage = responseArray[0]
+  const aiResponseArray = conversation.value.filter((convo) => !convo.isUser)
+  const currentAiMessageObj = aiResponseArray[aiResponseArray.length - 1]
+  currentAiMessageObj.message = currMessage
+  chatbotStore.setIsResponseGenerating(true)
+  console.log(conversation.value)
 
-    // if the end of stream is reached, stop typing and clear the message container
-    if(value.includes('~~~ENDOFSTREAM~~~')){
-      console.log('end of stream')
-      isGeneratingResponses.value = false
-      currentAiMessageObj.isTyping = false
-      chatbotStore.setIsResponseGenerating(false)
-      mesRes.value = ''
-    }
-  })
+  // if the end of stream is reached, stop typing and clear the message container
+  if (value.includes('~~~ENDOFSTREAM~~~')) {
+    console.log('end of stream')
+    isGeneratingResponses.value = false
+    currentAiMessageObj.isTyping = false
+    chatbotStore.setIsResponseGenerating(false)
+    mesRes.value = ''
+  }
+})
 const subscriptionLoading = ref(false)
-const subscribeToPlan = ()=> {
+const subscribeToPlan = () => {
   // chatbotStore.setSubscription(true)
   subscriptionLoading.value = true
 
@@ -534,7 +532,7 @@ const subscribeToPlan = ()=> {
 }
 
 
-const expandSidebar = ()=>{
+const expandSidebar = () => {
   chatbotStore.setCollapse(false)
   console.log(window.innerWidth)
 }
@@ -545,16 +543,16 @@ const isScrolling = ref(false)
 const conversationContainerHeight = ref(0)
 const isScrollable = ref(false)
 
-const scrollBottom =()=>{
+const scrollBottom = () => {
   // if currentPosition is greater than 0 means the element is scrollable
   // console.log('currentScrollPosition', currentScrollPosition)
-  if(currentScrollPosition.value > 0){
+  if (currentScrollPosition.value > 0) {
     isScrollable.value = true
   }
   // we want to scroll into the element #user-input-holder to bring it to view
   const conversationCon = document.querySelector('#user-input-placeholder')
   conversationCon?.scrollIntoView({
-    behavior:'smooth',
+    behavior: 'smooth',
     block: 'end',
     inline: 'nearest'
   })
@@ -562,12 +560,12 @@ const scrollBottom =()=>{
 }
 
 
-document .addEventListener('scroll', ()=>{
+document.addEventListener('scroll', () => {
   console.log('adding event listener for scrolling')
   //getting the height of the <html> tag
   currentScrollPosition.value = document.documentElement.scrollTop
   // we  know the user is at tbe bottom if scrollTop of the div container is greater or equal to the scrollHeight - clientHeight
-  if(conversationContainerRef.value){
+  if (conversationContainerRef.value) {
     isBottom.value = conversationContainerRef.value?.scrollTop >= conversationContainerRef.value?.scrollHeight - conversationContainerRef.value?.clientHeight
     // set isScrolling to true if the user is scrolling and is not at the bottom and the element is at the top
     isScrolling.value = currentScrollPosition.value > 0 && !isBottom.value
@@ -575,8 +573,8 @@ document .addEventListener('scroll', ()=>{
 })
 
 // check if the conversation array has something and scrolling to the bottom
-watch(conversation.value, ()=>{
-  if(conversationContainerRef.value){
+watch(conversation.value, () => {
+  if (conversationContainerRef.value) {
     conversationContainerHeight.value = conversationContainerRef.value.clientHeight || 0
   }
   console.log('conversation array changed')
