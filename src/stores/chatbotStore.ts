@@ -290,8 +290,54 @@ const isErrorUserPlan = ref<boolean>(false)
     }
   }
 
+  async function generateChatShareLink(){
+    const authStore = useAuthStore()
+    try{
+      const response = await fetch(`${BASE_URL}/api/share-chat/generate-url/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `${authStore.token}`
+        },
+        body: JSON.stringify({
+          conversationId: conversationId.value
+        })
+      })
+      const resp = await response.json()
+      console.log(resp)
+      return {
+        result: 'success',
+        data:resp.data
+      }
+    }
+    catch(error){
+      console.error(error)
+      return {
+        result: 'error',
+        data: null
+      }
+    }
+  }
 
-
+  async function loadShareChat (shareId: string){
+    const notification = useNotificationsStore()
+    try{
+      const response = await fetch(`${BASE_URL}/api/shared-chat/${shareId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        mode:'cors'
+      })
+      const resp = await response.json()
+      console.log('share chat',resp)
+      return resp
+    }
+    catch (error){
+      console.error(error)
+      notification.addNotification('There is an error fetching chat history', 'error')
+    }
+  }
 
     return{
       newChat,
@@ -322,8 +368,10 @@ const isErrorUserPlan = ref<boolean>(false)
       getUserSubscription,
       isErrorUserPlan,
       isOpenPositiveFeedback,
-      setPositiveFeedback
-
-
+      setFeedback,
+      isOpenShareDialog,
+      setShareDialog,
+      getChatLink: generateChatShareLink,
+      loadShareChat
     }
 })
