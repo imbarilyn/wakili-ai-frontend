@@ -689,7 +689,32 @@ const handleThumbDown = () => {
   console.log('Negative feedback')
 }
 
+const userFeedback = ref<string>('')
+const positiveFeedbackRef = ref<HTMLTextAreaElement | null>(null)
+const feedbackInputHasFocus = ref<boolean>(false)
+const addFocus = () => {
+  feedbackInputHasFocus.value = true
+  // nextTick(()=>{
+  //   positiveFeedbackRef.value.focus()
+  // })
+}
+const adjustTextAreaHeight = (element: HTMLTextAreaElement) =>{
+  if(element.scrollHeight > element.clientHeight){
+    // element.style.paddingBottom = '44px'
+    element.style.height = 'auto'
+    element.style.height = `${element.scrollHeight}px`
+  }
+}
 
+watch(userFeedback,(value)=>{
+  if(value){
+    console.log(positiveFeedbackRef.value?.scrollHeight, positiveFeedbackRef.value?.clientHeight)
+    nextTick(()=>{
+      adjustTextAreaHeight(positiveFeedbackRef.value as HTMLTextAreaElement)
+    })
+  }
+
+})
 
 
 </script>
