@@ -82,7 +82,6 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
     return isOpenShareDialog.value.isOpen = value
   }
 
-
   const setActiveHistoryButton = (value: string)=>{
     return activeHistoryButton.value = value
   }
