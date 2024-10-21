@@ -15,6 +15,9 @@ import DialogModal from '@/components/toasts/DialogModal.vue'
 import moment from 'moment'
 import LoadingPage from '@/components/LoadingPage.vue'
 
+import { Share , Copy} from 'lucide-vue-next'
+import ListBox from '@/components/ListBox.vue'
+
 export interface Conversation {
   message: string
   isUser: boolean
