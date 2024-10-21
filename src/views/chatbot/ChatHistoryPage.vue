@@ -647,6 +647,47 @@ const copyShareChatLink = ()=>{
       }
     }
 
+  }
+}
+
+const shareOn =(value: string) =>{
+  const urlToShare= linkChatInput.value as string
+  const encodeURL = encodeURIComponent(urlToShare)
+  let shareUrl = ''
+  const message = encodeURIComponent('Check out this awesome Legal consultant')
+  if(value === 'facebook'){
+    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURL}&quote=${message}`
+  }else if(value === 'twitter'){
+    shareUrl = `https://twitter.com/intent/tweet?url=${encodeURL}&text=${message}`
+  }else if(value === 'whatsapp'){
+    shareUrl = `https://api.whatsapp.com/send?text=${message}%20${encodeURL}`
+  }else if(value === 'linkedIn'){
+    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURL}`
+  }
+  window.open(shareUrl, '_blank')
+}
+const shareChat = () => {
+  chatbotStore.setShareDialog(true)
+  console.log(isGeneratingLink.value)
+}
+
+// check if the modal is closed and return absolute everything to default
+watch(()=>chatbotStore.isOpenShareDialog.isOpen, (value)=>{
+  if(!value){
+    isGeneratingLink.value = false
+    showSocials.value = false
+    linkChatInput.value = ''
+    showCopyBtn.value=false
+  }
+})
+const handleThumbUp = () => {
+  console.log('positive feedback')
+  chatbotStore.setPositiveFeedback(true)
+}
+
+const handleThumbDown = () => {
+  console.log('Negative feedback')
+}
 
 
 
