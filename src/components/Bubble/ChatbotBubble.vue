@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
-import { useChatbotStore} from '@/stores'
+import { useChatbotStore } from '@/stores'
 import BulletPoint from '@/components/BulletPoint.vue'
 
 export interface ChatbotBubbleProps {
@@ -11,7 +11,10 @@ export interface ChatbotBubbleProps {
   hasError?: boolean
   picture?: string
   chatbotMessage: string
+  originalMessage?: string
+  createdAt?: string
 }
+
 
 const props = withDefaults(defineProps<ChatbotBubbleProps>(), {
   isTyping: true,
@@ -19,9 +22,11 @@ const props = withDefaults(defineProps<ChatbotBubbleProps>(), {
   hasError: false
 })
 
-console.log("We are the chatbubble section**********",props.isTyping)
+console.log('Here in the copy', props.isCopyable)
+
+console.log('We are the chatbubble section**********', props.isTyping)
 const chatbotStore = useChatbotStore()
-const hasText = computed(()=>{
+const hasText = computed(() => {
   return props.chatbotMessage.length > 0
 })
 
@@ -39,7 +44,7 @@ const copyChat = () => {
       alert('Your browser does not support clipboard feature, switch to a different browser')
     } else {
       try {
-        navigator.clipboard.writeText(props.originalMessage)
+        navigator.clipboard.writeText(props.originalMessage as string)
         isCopied.value = true
       } catch (error) {
         alert('Failed to copy, please try again')
@@ -54,15 +59,25 @@ const copyChat = () => {
 
 
 
-// onMounted(()=>{
-//   console.log(props.chatbotMessage)
-// })
+const emits = defineEmits<{
+  (event: 'thumbDown'): void
+  (event: 'thumbUp'): void
+}>()
 
-console.log(props.chatbotMessage)
+// share positive feedback
+const thumbUp = () => {
+  console.log('Thumb up')
+  emits('thumbUp')
+}
+
+// Report an issue
+const thumbDown = () => {
+  emits('thumbDown')
+}
 </script>
 
 <template>
-  <div class="chat chat-start pt-10">
+  <div class="chat chat-start py-10">
     <div class="chat-image avatar">
       <div class="w-10 rounded-full">
         <img src="../../../public/images/justice_scale.png" alt="wakili-ai" />
@@ -70,41 +85,55 @@ console.log(props.chatbotMessage)
       </div>
     </div>
     <div class="chat-header">
-      <span>{{props.chatbotName}}</span>
-      <time class="text-xs opacity-50">12:45</time>
+      <span>{{ props.chatbotName }}</span>
+      <time v-if='props.createdAt' class="text-xs opacity-50">12:45</time>
     </div>
-<!--    Chatbubble div-->
+    <!--    Chatbubble div-->
     <div>
-      <div  class="relative chat-bubble md:w-11/12 w-full text-sm md:text-lg flex flex-col">
+      <div class="relative chat-bubble md:w-11/12 w-full text-sm md:text-lg flex flex-col">
         <div v-html="props.chatbotMessage"></div>
         <div v-if="!hasText"
-          class="chat-bubble w-10/12">
+             class="chat-bubble w-10/12">
           <span class="loading loading-ball loading-lg"></span>
         </div>
         <div v-if="chatbotStore.isResponseGenerating && hasText">
           <BulletPoint fill="#B9ED79" class="ml-2"></BulletPoint>
         </div>
-        </div>
-
-<!--      <div v-html="props.chatbotMessage"-->
-<!--           v-if="hasText"-->
-<!--           class="chat-bubble md:w-11/12 w-full text-sm md:text-lg">-->
-<!--      </div>-->
-<!--      <div-->
-<!--        v-if="props.isTyping"-->
-<!--           class="chat-bubble w-10/12">-->
-<!--        <span><BulletPoint fill="#B9ED79"></BulletPoint></span>-->
-<!--        -->
-<!--      </div>-->
+      </div>
     </div>
 
-    <div class="chat-footer opacity-50">Delivered</div>
+    <div v-if="hasCopyButton" class="chat-footer space-x-3 mt-0.5 right-0 flex flex-row ">
+
+      <div class="relative hover:cursor-pointer group"
+           @click="copyChat"
+      >
+        <span class="material-icons-outlined md:!text-lg !text-lg" v-if="!isCopied">content_copy</span>
+        <div v-if="isCopied" class="flex items-end justify-center text-emerald-500">
+          <span class="material-icons-outlined text-sm">done</span>
+          <span class="text-sm">Copied to clipboard</span>
+        </div>
+        <span v-if="!isCopied"
+              class="absolute top-6 text-nowrap left-10 bg-main-color text-white py-0 px-0 rounded-lg w-0 group-hover:w-fit group-hover:px-1 group-hover:py-1 group-hover:left-2 group-hover:duration-700">copy chat</span>
+      </div>
+      <div class="relative hover:cursor-pointer group"
+           @click="thumbUp"
+      >
+        <span class="material-icons-outlined !text-lg">thumb_up</span>
+        <span
+          class="absolute  top-6 text-nowrap left-16 bg-main-color text-white py-0 px-0 rounded-lg w-0 group-hover:px-1 group-hover:py-1 group-hover:duration-700 group-hover:w-fit group-hover:left-2">positive feedback</span>
+      </div>
+      <div class="relative group hover:cursor-pointer" @click="thumbDown">
+        <span class="material-icons-outlined !text-lg">thumb_down</span>
+        <span
+          class="absolute text-nowrap top-6 left-32 bg-main-color text-white py-0 px-0 rounded-lg w-0 group-hover:px-1 group-hover:py-1 group-hover:left-2 group-hover:duration-700 group-hover:w-fit">Report issue</span>
+      </div>
+
+
+    </div>
   </div>
 </template>
 
 <style scoped>
-
-
 
 
 </style>
