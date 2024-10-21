@@ -63,6 +63,9 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   const isOpenPositiveFeedback = ref({
     isOpen: false
   })
+  const isOpenShareDialog = ref({
+    isOpen: false
+  })
 
 
 
@@ -71,9 +74,12 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   const setIsResponseGenerating = (value: boolean)=>{
     return isResponseGenerating.value = value
   }
-  const setPositiveFeedback = (value: boolean)=>{
+  const setFeedback = (value: boolean)=>{
     return isOpenPositiveFeedback.value.isOpen = value
+  }
 
+  const setShareDialog = (value: boolean)=> {
+    return isOpenShareDialog.value.isOpen = value
   }
 
 
