@@ -1,15 +1,14 @@
-
 <script setup lang="ts">
 import ChatbotBubble from '@/components/Bubble/ChatbotBubble.vue'
 import UserBubble from '@/components/Bubble/UserBubble.vue'
 import { io } from 'socket.io-client'
 import UserInput from '@/components/UserInput.vue'
 import { colorGenerator } from '@/composables/colorgenerator'
-import { onMounted, ref, watch } from 'vue'
-import { useAuthStore, useNotificationsStore, useChatbotStore} from '@/stores'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { useAuthStore, useNotificationsStore, useChatbotStore } from '@/stores'
 import hljs from 'highlight.js'
 import { useRoute, useRouter } from 'vue-router'
-import  { marked, type RendererObject, type Tokens } from 'marked'
+import { marked, type RendererObject, type Tokens } from 'marked'
 import _ from 'lodash'
 import DialogModal from '@/components/toasts/DialogModal.vue'
 import moment from 'moment'
@@ -24,28 +23,28 @@ export interface Conversation {
   isTyping?: boolean
   hasError?: boolean
   uniqueId: string | number
-  audioData?:{
+  audioData?: {
     audio: Blob,
     audioUrl: string
   }
 }
 
-interface Subscription {
-  message:string
-  sessionId: string
-  conversationId:string
-  createdAt: 'string'
-}
+// interface Subscription {
+//   message: string
+//   sessionId: string
+//   conversationId: string
+//   createdAt: 'string'
+// }
 
 const route = useRouter()
 
 
-onMounted(()=>{
+onMounted(() => {
   chatbotStore.convoId()
   setColor()
   // console.log(authStore.getToken)
   //   console.log(authStore.getUserInfo()?.picture)
-return chatbotStore.isSubscription
+  return chatbotStore.isSubscription
 })
 const SOCKETS_URL = import.meta.env.VITE_APP_SOCKET_IO_URL as string
 // const socket = io('ws://192.168.100.12:5001')
@@ -81,7 +80,7 @@ socket.on('payment_required', (message) => {
   isPlanExpired.value = true
 
 })
-const {darkBgColor, setColor } = colorGenerator(authStore.getUserInfo()?.firstName || 'You')
+const { darkBgColor, setColor } = colorGenerator(authStore.getUserInfo()?.firstName || 'You')
 
 // const renderer: any = {
 //   link(href: string, title: string, text: string) {
@@ -450,7 +449,7 @@ const handleUserInput = (
     uniqueId: _.uniqueId('ai-'),
     isTyping: true
   })
-
+chatbotStore.isResponseGenerating =true
   // push the ai-message to the conversation array
   setTimeout(() => {
     conversation.value.push(aiMessage.value)
@@ -486,6 +485,7 @@ watch(() => mesRes.value, (value: string) => {
   if (!value) {
     return
   }
+  chatbotStore.isResponseGenerating = true
   const responseArray = value.split('~~~ENDOFSTREAM~~~')
   const currMessage = responseArray[0]
   const aiResponseArray = conversation.value.filter((convo) => !convo.isUser)
@@ -493,11 +493,11 @@ watch(() => mesRes.value, (value: string) => {
   currentAiMessageObj.message = currMessage
   chatbotStore.setIsResponseGenerating(true)
   console.log(conversation.value)
-
   // if the end of stream is reached, stop typing and clear the message container
   if (value.includes('~~~ENDOFSTREAM~~~')) {
     console.log('end of stream')
-    isGeneratingResponses.value = false
+    // isGeneratingResponses.value = false
+    chatbotStore.isResponseGenerating = false
     currentAiMessageObj.isTyping = false
     chatbotStore.setIsResponseGenerating(false)
     mesRes.value = ''
@@ -584,7 +584,7 @@ watch(conversation.value, () => {
   scrollBottom()
 })
 
-setTimeout(()=>{
+setTimeout(() => {
   scrollBottom()
 }, 1000)
 
@@ -628,6 +628,7 @@ watch(userFeedback,(value)=>{
     })
   }
 
+})
 
 
 
@@ -744,15 +745,27 @@ const negativeFeedbackOption = [
 </script>
 <template>
   <div class="relative min-h-full  w-full flex justify-center flex-1 lg:max-w-screen-xl lg:mx-auto"
-  ref="conversationContainerRef">
-    <div class="w-full min-h-screen   lg:py-14 flex flex-col">
+       ref="conversationContainerRef">
+    <div class="w-full min-h-screen   lg:py-0 flex flex-col">
       <div class="top-0 sticky z-40 bg-white pt-6 ">
-        <div class="lg:hidden block z-40 sm:ps-4 pt-3">
-          <button class="btn btn-sm" @click="expandSidebar">
+        <div class="fixed right-4 top-6">
+          <div
+            v-if="aiHasResponded"
+            @click="shareChat"
+            class="flex btn btn-sm btn-ghost bg-transparent border-gray-300 rounded-2xl hover:text-white hover:bg-main-color"
+          >
+            <Share :size="18" />
+            <span class="text-sm">Share</span>
+          </div>
+        </div>
+
+        <div class="lg:hidden block z-40 sm:ps-6">
+          <button class="btn btn-sm btn-ghost" @click="expandSidebar">
             <span class="material-icons-outlined">menu</span>
           </button>
+
         </div>
-        <div class="">
+        <div class="pt-8">
           <div class="flex justify-center -z-10 w-full">
             <div class="flex justify-center backdrop-blur">
               <img class="w-10  h-10" src="../../../public/images/justice_scale.png">
@@ -767,28 +780,28 @@ const negativeFeedbackOption = [
 
       <div class="relative w-full h-full  mx-auto md:ps-8 lg:ps-10">
         <Transition mode="out-in" name="slide-in">
-            <template v-if="!appIsFetching">
-              <div class="px-2">
-                <ChatbotBubble
-                  :key="1"
-                  :chatbot-name="'Wakili Ai'"
-                  :chatbot-message="'Hello there! How can I help you today?'"
-                  :is-typing="false"
-                  :is-copyable="false"
-                  :has-error="false"
-                  :placeholder="placeholder"
-                />
+          <template v-if="!appIsFetching">
+            <div class="px-2">
+              <ChatbotBubble
+                :key="1"
+                :chatbot-name="'Wakili Ai'"
+                :chatbot-message="'Hello there! How can I help you today?'"
+                :is-typing="false"
+                :is-copyable="false"
+                :has-error="false"
+                :placeholder="placeholder"
+              />
 
-                <div class="relative" v-if="!isPlanExpired">
-                  <div class="absolute h-64  w-full flex justify-center items-center ">
-                    <div class="fixed">
-                      <img src="../../../public/images/justice_scale.png" class="h-20 w-20 opacity-10">
-                    </div>
+              <div class="relative" v-if="!isPlanExpired">
+                <div class="absolute h-64  w-full flex justify-center items-center ">
+                  <div class="fixed">
+                    <img src="../../../public/images/justice_scale.png" class="h-20 w-20 opacity-10">
                   </div>
-                  <ul>
-                    <template v-for="(conv, index) in conversation" :key="index" >
-                      <UserBubble
-                        v-if="
+                </div>
+                <ul>
+                  <template v-for="(conv, index) in conversation" :key="index">
+                    <UserBubble
+                      v-if="
                                 conv.isUser &&
                                 conv.message &&
                                 conv.message.length > 0 &&
@@ -796,38 +809,44 @@ const negativeFeedbackOption = [
                                 chatbotStore.conversationId
 
                                 "
-                        :picture="authStore.getUserInfo()?.picture"
-                        :darkBgColor="darkBgColor"
-                        :userInput = conv.message
-                        :isTyping="conv.isTyping"
-                      />
-                      <ChatbotBubble
-                        v-else-if="!conv.isUser && chatbotStore.conversationId"
-                        :chatbot-message ="marked.parse(conv.message) as string"
-                        :is-typing="conv.isTyping"
-                        :chatbot-name="'Wakili Ai'"
-                      />
-                    </template>
-                  </ul>
-                </div>
-              </div>
-            </template>
-        </Transition>
-      </div>
-<!--      <div class="mb-14"></div>-->
-      <div v-if="isBottom" class="py-12 bg-gradient-to-t from-main-color-light-color block"></div>
-      <div class="fixed lg:ms-64 bottom-0 left-0  right-0 lg:pb-6 bg-white">
-            <div class="w-full grid grid-cols">
-              <div
-                class=" w-11/12 lg:10/12 mx-auto">
-                <UserInput
-                  class="bg-secondary-color z-10 mb-6"
-                  :disabled="false"
-                  :isGenerating="isGeneratingResponses"
-                  :placeholder="placeholder"
-                  @user-input="handleUserInput"/>
+                      :picture="authStore.getUserInfo()?.picture"
+                      :darkBgColor="darkBgColor"
+                      :userInput=conv.message
+                      :isTyping="conv.isTyping"
+                      :key="index"
+                    />
+                    <ChatbotBubble
+                      @thumb-up="handleThumbUp"
+                      @thumb-down="handleThumbDown"
+                      v-else-if="!conv.isUser && chatbotStore.conversationId"
+                      :chatbot-message="marked.parse(conv.message) as string"
+                      :is-typing="conv.isTyping"
+                      :chatbot-name="'Wakili Ai'"
+                      :key="conv.uniqueId"
+                      :is-copyable="index !== 0"
+                      :original-message="conv.message"
+                    />
+                  </template>
+                </ul>
               </div>
             </div>
+          </template>
+        </Transition>
+      </div>
+      <!--      <div class="mb-14"></div>-->
+      <div v-if="isBottom" class="py-12 bg-gradient-to-t from-main-color-light-color block"></div>
+      <div class="fixed lg:ms-64 bottom-0 left-0  right-0 lg:pb-6 bg-white">
+        <div class="w-full grid grid-cols">
+          <div
+            class=" w-11/12 lg:10/12 mx-auto">
+            <UserInput
+              class="bg-secondary-color z-10 mb-6"
+              :disabled="false"
+              :isGenerating="isGeneratingResponses"
+              :placeholder="placeholder"
+              @user-input="handleUserInput" />
+          </div>
+        </div>
       </div>
       <div id="user-input-placeholder"></div>
     </div>
@@ -838,7 +857,8 @@ const negativeFeedbackOption = [
       >
         <template #title>
           <div class="flex justify-end">
-            <button class="btn btn-sm btn-circle" @click="chatbotStore.setSubscription(true)"><span class="material-icons-outlined">close</span></button>
+            <button class="btn btn-sm btn-circle" @click="chatbotStore.setSubscription(true)"><span
+              class="material-icons-outlined">close</span></button>
           </div>
           <div>
             <span class="font-bold text-xl">Limited Credits(2 free credits a day)</span>
@@ -858,6 +878,166 @@ const negativeFeedbackOption = [
               <span class="loading loading-spinner loading-sm" v-else></span>
             </button>
           </div>
+        </template>
+      </DialogModal>
+      <!--Positive Feeback-->
+      <DialogModal
+        :is-open="chatbotStore.isOpenPositiveFeedback.isOpen"
+        @closeModal="chatbotStore.setFeedback(false)"
+      >
+        <template #title>
+          <div class="flex flex-row-reverse justify-between">
+            <div class="">
+              <button class="btn btn-sm btn-circle" @click="chatbotStore.setFeedback(false)"><span
+                class="material-icons-outlined">close</span></button>
+            </div>
+            <div>
+              <span class="font-semibold text-lg">Feedback</span>
+            </div>
+          </div>
+
+        </template>
+        <template #body>
+          <div class="space-y-3">
+            <p>Please provide details down below</p>
+            <ListBox v-if="!isPositiveFeedback" :list-props="negativeFeedbackOption" />
+            <div @click.stop="addFocus">
+              <textarea
+                v-model="userFeedback"
+                ref="positiveFeedbackRef"
+                class="input input-primary pt-2 w-full resize-none overflow-y-hidden grow border-1 border-slate-500 focus:outline-none"
+                placeholder="What stood out about the response?"
+                @blur="feedbackInputHasFocus = false"
+                @focus="feedbackInputHasFocus = true"
+              >
+            </textarea>
+
+            </div>
+
+          </div>
+        </template>
+
+        <template #footer>
+          <div class="space-y-2">
+            <div>
+              <p class="italic font-normal text-sm md:text-md">Submitting this report will go along way to foster future
+                improvements to our models. Please note that submitted feedback shall be disassociated from user ID
+                together with the inputs and outputs for the purpose of training and inporiving our models.</p>
+            </div>
+            <div class="space-x-2 flex justify-end">
+              <button class="btn bg-main-color text-white" @click="chatbotStore.setFeedback(false)">
+                <span>cancel</span>
+              </button>
+              <button class="bg-secondary-color btn">
+                <span class="text-main-color">Submit</span>
+                <!--              <span class="loading loading-spinner loading-sm"></span>-->
+              </button>
+            </div>
+          </div>
+        </template>
+      </DialogModal>
+
+      <!--      share Dialog modal-->
+      <DialogModal
+        :is-open="chatbotStore.isOpenShareDialog.isOpen && !chatbotStore.isResponseGenerating"
+        @closeModal="chatbotStore.setShareDialog(false)"
+      >
+        <template #title>
+          <div class="flex flex-row-reverse justify-between">
+            <div class="">
+              <button class="btn btn-sm btn-circle" @click="chatbotStore.setShareDialog(false)"><span
+                class="material-icons-outlined">close</span></button>
+            </div>
+            <div>
+              <span class="font-semibold text-lg">Share link chat to friends</span>
+            </div>
+          </div>
+
+        </template>
+        <template #body>
+          <div class="">
+            <p class="">Please be informed that any messages you add on sharing the message remains private. </p>
+
+          </div>
+        </template>
+
+        <template #footer>
+          <div class="flex flex-col">
+          <div class=" md:space-x-2 w-full  flex items-center border border-main-color py-3 !rounded-2xl px-3">
+
+              <input
+                v-model="linkChatInput"
+                class="h-10 w-8/12 overflow-ellipsis border-0 line-clamp-1 ring-1 md:ps-2 ps-1 ring-inset me-0.5 ring-gray-200 focus:text-main-color focus:ring-1 focus:ring-inset focus:ring-main-color rounded-md"
+                placeholder="https://wakili.org.com/share/..."
+
+              />
+
+              <div
+                @click="generateLink"
+                v-if="!isGeneratingLink && !showCopyBtn"
+                class="hover:bg-main-color hover:text-white rounded-2xl  bg-transparent border-gray-300 btn btn-sm">
+                <span class="">generate link</span>
+                <!--              <span v-else  class="loading loading-spinner loading-md text-white"></span>-->
+              </div>
+              <div v-if="isGeneratingLink && !showCopyBtn" class="btn btn-sm rounded-xl bg-main-color" disabled>
+                <span class="text-white">generating...</span>
+                <span class="loading loading-spinner loading-md text-white"></span>
+              </div>
+            <div
+              v-if="showCopyBtn"
+              @click="copyShareChatLink"
+              class="btn btn-sm btn-ghost border-gray-300 rounded-2xl bg-transparent hover:bg-main-color hover:text-white ">
+              <Copy />
+              <span v-if="!isShareChatLinkCopy">Copy link</span>
+              <span v-else>Copied</span>
+            </div>
+
+            </div>
+            <div
+              v-if="showSocials"
+              class="flex flex-row justify-center py-4 w-full mx-auto">
+              <div>
+                <div
+                  @click.stop="shareOn('linkedIn')"
+                  class=" btn btn-sm btn-ghost w-14 h-14"
+                >
+                  <img src="../../../public/images/linkedin.png" alt="linkedin_logo">
+                </div>
+                <span>LinkedIn</span>
+              </div>
+
+              <div>
+                <div
+                  @click.stop="shareOn('whatsapp')"
+                  class="btn btn-sm btn-ghost w-14 h-14"
+                >
+                  <img src="../../../public/images/whatsapp.png" alt="whatsapp_logo"/>
+                </div>
+                <span>Whatsapp</span>
+              </div>
+              <div>
+                <div
+                  @click.stop="shareOn('facebook')"
+                  class="btn btn-sm btn-ghost w-14 h-14"
+                >
+                  <img src="../../../public/images/facebook.png" alt="facebook_logo"/>
+                </div>
+                <span>Facebook</span>
+
+              </div>
+              <div>
+                <div
+                  @click.stop="shareOn('twitter')"
+                  class="btn btn-sm btn-ghost w-14 h-14"
+                >
+                  <img src="../../../public/images/twitter.png" alt="twitter_logo"/>
+                </div>
+                <span>Twitter</span>
+              </div>
+            </div>
+          </div>
+
+
         </template>
       </DialogModal>
     </teleport>
