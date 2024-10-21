@@ -721,14 +721,22 @@ watch(userFeedback,(value)=>{
 <template>
   <div class="relative min-h-full  w-full flex justify-center flex-1 lg:max-w-screen-xl lg:mx-auto"
        ref="conversationContainerRef">
-    <div class="w-full min-h-screen   lg:py-14 flex flex-col">
+    <div class="w-full min-h-screen   lg:py-0 flex flex-col">
       <div class="top-0 sticky z-40 bg-white pt-6 ">
+        <div class="fixed right-4 top-6">
+          <div
+            @click="shareChat"
+            class="flex space-x-1 btn btn-sm btn-ghost bg-transparent border-gray-300 rounded-2xl hover:text-white hover:bg-main-color">
+            <Share  :size="18"/>
+            <span class="text-sm" >Share</span>
+          </div>
+        </div>
         <div class="lg:hidden block z-40 sm:ps-4 pt-3">
           <button class="btn btn-sm" @click="expandSidebar">
             <span class="material-icons-outlined">menu</span>
           </button>
         </div>
-        <div class="">
+        <div class="pt-8">
           <div class="flex justify-center -z-10 w-full">
             <div class="flex justify-center backdrop-blur">
               <img class="w-10  h-10" src="../../../public/images/justice_scale.png">
@@ -778,6 +786,8 @@ watch(userFeedback,(value)=>{
                       :isTyping="conv.isTyping"
                     />
                     <ChatbotBubble
+                      @thumb-up="handleThumbUp"
+                      @thumb-down="handleThumbUp"
                       v-else-if="!conv.isUser && chatbotStore.conversationId"
                       :chatbot-message ="marked.parse(conv.message) as string"
                       :is-typing="conv.isTyping"
@@ -839,6 +849,164 @@ watch(userFeedback,(value)=>{
           </div>
         </template>
       </DialogModal>
+
+<!--Feedback Modal-->
+      <DialogModal
+        :is-open="chatbotStore.isOpenPositiveFeedback.isOpen"
+        @closeModal="chatbotStore.setPositiveFeedback(false)"
+      >
+        <template #title>
+          <div class="flex flex-row-reverse justify-between">
+            <div class="">
+              <button class="btn btn-sm btn-circle" @click="chatbotStore.setPositiveFeedback(false)"><span
+                class="material-icons-outlined">close</span></button>
+            </div>
+            <div>
+              <span class="font-semibold text-lg">Feedback</span>
+            </div>
+          </div>
+
+        </template>
+        <template #body>
+          <div class="space-y-3">
+            <p>Please provide details down below</p>
+            <div @click.stop="addFocus">
+              <textarea
+                v-model="userFeedback"
+                ref="positiveFeedbackRef"
+                class="input input-primary pt-2 w-full resize-none overflow-y-hidden grow border-1 border-slate-500 focus:outline-none"
+                placeholder="What stood out about the response?"
+                @blur="feedbackInputHasFocus = false"
+                @focus="feedbackInputHasFocus = true"
+              >
+            </textarea>
+
+            </div>
+
+          </div>
+        </template>
+
+        <template #footer>
+          <div class="space-y-2">
+            <div>
+              <p class="italic font-normal text-sm md:text-md">Submitting this report will go along way to foster future
+                improvements to our models. Please note that submitted feedback shall be disassociated from user ID
+                together with the inputs and outputs for the purpose of training and inporiving our models.</p>
+            </div>
+            <div class="space-x-2 flex justify-end">
+              <button class="btn bg-main-color text-white" @click="chatbotStore.setPositiveFeedback(false)">
+                <span>cancel</span>
+              </button>
+              <button class="bg-secondary-color btn">
+                <span class="text-main-color">Submit</span>
+                <!--              <span class="loading loading-spinner loading-sm"></span>-->
+              </button>
+            </div>
+          </div>
+        </template>
+      </DialogModal>
+
+      <DialogModal
+        :is-open="chatbotStore.isOpenShareDialog.isOpen && !chatbotStore.isResponseGenerating"
+        @closeModal="chatbotStore.setShareDialog(false)"
+      >
+        <template #title>
+          <div class="flex flex-row-reverse justify-between">
+            <div class="">
+              <button class="btn btn-sm btn-circle" @click="chatbotStore.setShareDialog(false)"><span
+                class="material-icons-outlined">close</span></button>
+            </div>
+            <div>
+              <span class="font-semibold text-lg">Share link chat to friends</span>
+            </div>
+          </div>
+
+        </template>
+        <template #body>
+          <div class="">
+            <p class="">Please be informed that any messages you add on sharing the message remains private. </p>
+
+          </div>
+        </template>
+
+        <template #footer>
+          <div class="flex flex-col">
+            <div class=" md:space-x-2 w-full  flex items-center border border-main-color py-3 !rounded-2xl px-3">
+
+              <input
+                v-model="linkChatInput"
+                class="h-10 w-8/12 overflow-ellipsis border-0 line-clamp-1 ring-1 md:ps-2 ps-1 ring-inset me-0.5 ring-gray-200 focus:text-main-color focus:ring-1 focus:ring-inset focus:ring-main-color rounded-md"
+                placeholder="https://wakili.org.com/share/..."
+
+              />
+
+              <div
+                @click="generateLink"
+                v-if="!isGeneratingLink && !showCopyBtn"
+                class="hover:bg-main-color hover:text-white rounded-2xl  bg-transparent border-gray-300 btn btn-sm">
+                <span class="">generate link</span>
+                <!--              <span v-else  class="loading loading-spinner loading-md text-white"></span>-->
+              </div>
+              <div v-if="isGeneratingLink && !showCopyBtn" class="btn btn-sm rounded-xl bg-main-color" disabled>
+                <span class="text-white">generating...</span>
+                <span class="loading loading-spinner loading-md text-white"></span>
+              </div>
+              <div
+                v-if="showCopyBtn"
+                @click="copyShareChatLink"
+                class="btn btn-sm btn-ghost border-gray-300 rounded-2xl bg-transparent hover:bg-main-color hover:text-white ">
+                <Copy />
+                <span v-if="!isShareChatLinkCopy">Copy link</span>
+                <span v-else>Copied</span>
+              </div>
+
+            </div>
+            <div
+              v-if="showSocials"
+              class="flex flex-row justify-center py-4 w-full mx-auto">
+              <div>
+                <div
+                  @click.stop="shareOn('linkedIn')"
+                  class=" btn btn-sm btn-ghost w-14 h-14"
+                >
+                  <img src="../../../public/images/linkedin.png" alt="linkedin_logo">
+                </div>
+                <span>LinkedIn</span>
+              </div>
+
+              <div>
+                <div
+                  @click.stop="shareOn('whatsapp')"
+                  class="btn btn-sm btn-ghost w-14 h-14"
+                >
+                  <img src="../../../public/images/whatsapp.png" alt="whatsapp_logo"/>
+                </div>
+                <span>Whatsapp</span>
+              </div>
+              <div>
+                <div
+                  @click.stop="shareOn('facebook')"
+                  class="btn btn-sm btn-ghost w-14 h-14"
+                >
+                  <img src="../../../public/images/facebook.png" alt="facebook_logo"/>
+                </div>
+                <span>Facebook</span>
+
+              </div>
+              <div>
+                <div
+                  @click.stop="shareOn('twitter')"
+                  class="btn btn-sm btn-ghost w-14 h-14"
+                >
+                  <img src="../../../public/images/twitter.png" alt="twitter_logo"/>
+                </div>
+                <span>Twitter</span>
+              </div>
+            </div>
+          </div>
+        </template>
+      </DialogModal>
+
     </teleport>
   </div>
 </template>
