@@ -631,6 +631,116 @@ watch(userFeedback,(value)=>{
 
 
 
+// Check whether there is a response from the AI to show the share button
+const aiHasResponded = computed(() => {
+  return conversation.value.some((conv) => !conv.isUser)
+})
+const shareChat = () => {
+  chatbotStore.setShareDialog(true)
+}
+
+const isGeneratingLink = ref(false)
+const showCopyBtn = ref(false)
+// generate chat link
+const generateLink = () => {
+  isGeneratingLink.value = true
+  chatbotStore.getChatLink()
+    .then((resp)=>{
+      if(resp.result === 'success'){
+        showCopyBtn.value = true
+        showSocials.value = true
+        linkChatInput.value = resp.data
+        // setTimeout(()=>{
+        //   showCopyBtn
+        // }, 2000)
+      }else{
+        notification.addNotification('Failed to generate chat link try again', 'error')
+        isGeneratingLink.value = false
+      }
+    })
+    .catch((error)=>{
+      console.log(error)
+    })
+
+}
+
+// check if the modal is closed and return absolute everything to default
+watch(()=>chatbotStore.isOpenShareDialog.isOpen, (value)=>{
+  if(!value){
+    isGeneratingLink.value = false
+    showSocials.value = false
+    linkChatInput.value = ''
+    showCopyBtn.value=false
+  }
+})
+
+
+// share to socials
+const shareOn =(value: string) =>{
+  const urlToShare= linkChatInput.value as string
+  const encodeURL = encodeURIComponent(urlToShare)
+  let shareUrl = ''
+  const message = encodeURIComponent('Check out this awesome Legal consultant')
+  if(value === 'facebook'){
+    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURL}&quote=${message}`
+  }else if(value === 'twitter'){
+   shareUrl = `https://twitter.com/intent/tweet?url=${encodeURL}&text=${message}`
+  }else if(value === 'whatsapp'){
+   shareUrl = `https://api.whatsapp.com/send?text=${message}%20${encodeURL}`
+  }else if(value === 'linkedIn'){
+    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURL}`
+  }
+  window.open(shareUrl, '_blank')
+}
+
+// copy share chat link
+const isShareChatLinkCopy = ref(false)
+const copyShareChatLink = ()=>{
+  if(!navigator.clipboard){
+    alert('Your browser does not support clipboard feature, switch to a different browser')
+  } else{
+    if(typeof navigator.clipboard.writeText === 'function'){
+      try{
+        navigator.clipboard.writeText(linkChatInput.value as string)
+        isShareChatLinkCopy.value = true
+      }
+      catch(error){
+        console.error(error)
+        notification.addNotification('Failed to copy chat link, please try again', 'error')
+      }
+      finally {
+        setTimeout(()=>{
+          isShareChatLinkCopy.value = false
+        }, 2000)
+      }
+    }
+
+  }
+}
+const linkChatInput = ref<string>()
+const showSocials = ref<boolean>(false)
+export interface Option {
+  name: string
+  value: number | string | boolean
+}
+const negativeFeedbackOption = [
+  {
+    name: 'Other',
+    value: 'Other'
+  },
+  {
+    name: 'Not helpful',
+    value: 'Not helpful'
+  },
+  {
+    name: 'UI bug',
+    value: 'UI bug'
+  },
+  {
+    name: 'Not factual correct',
+    value: 'Not factual correct'
+  }
+] as Option []
 </script>
 <template>
   <div class="relative min-h-full  w-full flex justify-center flex-1 lg:max-w-screen-xl lg:mx-auto"
