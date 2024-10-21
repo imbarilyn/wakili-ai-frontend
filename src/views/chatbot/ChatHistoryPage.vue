@@ -600,6 +600,52 @@ setTimeout(()=>{
   scrollBottom()
 }, 1000)
 
+const linkChatInput = ref<string>()
+const showSocials = ref<boolean>(false)
+const isGeneratingLink = ref(false)
+const showCopyBtn = ref(false)
+const isShareChatLinkCopy = ref(false)
+
+const generateLink = () => {
+  isGeneratingLink.value = true
+  chatbotStore.getChatLink()
+    .then((resp)=>{
+      console.log('Inthe history share', resp.data)
+      if(resp.result === 'success'){
+        showCopyBtn.value = true
+        showSocials.value = true
+        linkChatInput.value = resp.data
+        console.log('Link chat from histo',linkChatInput.value)
+      }else{
+        notification.addNotification('Failed to generate chat link try again', 'error')
+        isGeneratingLink.value = false
+      }
+    })
+    .catch((error)=>{
+      console.log(error)
+    })
+
+}
+
+const copyShareChatLink = ()=>{
+  if(!navigator.clipboard){
+    alert('Your browser does not support clipboard feature, switch to a different browser')
+  } else{
+    if(typeof navigator.clipboard.writeText === 'function'){
+      try{
+        navigator.clipboard.writeText(linkChatInput.value as string)
+        isShareChatLinkCopy.value = true
+      }
+      catch(error){
+        console.error(error)
+        notification.addNotification('Failed to copy chat link, please try again', 'error')
+      }
+      finally {
+        setTimeout(()=>{
+          isShareChatLinkCopy.value = false
+        }, 2000)
+      }
+    }
 
 
 
