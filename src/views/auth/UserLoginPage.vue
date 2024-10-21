@@ -211,15 +211,28 @@ const loginWithGoogle = () => {
 </script>
 
 <template>
-  <main class="w-full mx-auto p-6 flex items-center justify-center h-screen">
+  <main class="w-full h-screen grid grid-cols-2 md:items-center">
+    <div class="md:col-span-1 col-span-2 flex flex-col justify-center">
+      <div class="md:hidden flex items-end gap-2 justify-center w-full text-center bg-white ">
+        <img src="../../../public/images/justice_scale.png" class="w-10 inline-block">
+        <span class="text-main-color text-2xl">Wakili Ai</span>
+      </div>
+      <div class="w-6/12 md:w-10/12 lg:11/12  mx-auto">
+        <img src="../../../public/images/loginpage.jpg" class="">
+      </div>
+    </div>
     <div
-      class="w-full md:w-6/12 lg:w-5/12 xl:w-4/12 px-4 md:px-2 lg:px-0 mt-7 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
+      class="col-span-2 md:col-span-1 w-full md:w-9/12 items-end "
     >
-      <div class="p-4 sm:p-7">
+      <div class="p-4 md:p-7">
+        <div class="md:flex hidden items-end gap-2 justify-center w-full text-center pb-2">
+          <img src="../../../public/images/justice_scale.png" class="w-10 inline-block">
+          <span class="text-main-color !text-2xl font-bold">Wakili Ai</span>
+        </div>
         <div class="text-center">
-          <h1 class="block text-2xl font-bold text-gray-800 dark:text-white">Already have an account</h1>
-          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Login in here
+          <h1 class="block text-2xl font-bold text-gray-800 dark:text-white">Login</h1>
+          <p class="md:mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Don't have an account?
             <router-link
               class="text-blue-600 decoration-2 hover:underline font-medium dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
               :to="`/auth/user-signup`"
@@ -231,9 +244,9 @@ const loginWithGoogle = () => {
 
         <div class="mt-5">
           <!-- Form -->
-          <form class="my-4" @submit.prevent="onLoginClick">
+          <form class="md:my-4" @submit.prevent="onLoginClick">
             <div class="grid gap-y-4">
-              <div class="flex flex-col space-y-1">
+              <div class="flex flex-col md:space-y-1">
                 <div class="flex justify-between items-center">
                   <label class="label font-semibold text-sm" for="email">Email address </label>
                   <!--                  <router-link-->
@@ -246,9 +259,9 @@ const loginWithGoogle = () => {
                   v-model="loginData.email"
                   :class="{
                     'input-error': emailMeta.validated && !emailMeta.valid,
-                    'input-primary': emailMeta.validated && emailMeta.valid
+                    'input-bordered border-main-color': emailMeta.validated && emailMeta.valid
                   }"
-                  class="input input-primary input-bordered w-full text-sm"
+                  class="input input-bordered border-main-color w-full text-sm"
                   placeholder="John Doe"
                   required
                   type="email"
@@ -261,7 +274,7 @@ const loginWithGoogle = () => {
                 </small>
               </div>
 
-              <div class="flex flex-col space-y-1">
+              <div class="flex flex-col md:space-y-1">
                 <label class="label font-semibold text-sm" for="password">Password</label>
                 <input
                   id="password"
@@ -270,7 +283,7 @@ const loginWithGoogle = () => {
                     'input-error': passwordMeta.validated && !passwordMeta.valid,
                     'input-primary': passwordMeta.validated && passwordMeta.valid
                   }"
-                  class="input input-primary input-bordered w-full text-sm"
+                  class="input  input-bordered border-main-color w-full text-sm"
                   placeholder="Password"
                   required
                   type="password"
@@ -283,30 +296,35 @@ const loginWithGoogle = () => {
                 </small>
               </div>
 
-              <div class="flex flex-col space-y-1 my-1">
+              <div class="flex flex-col md:space-y-1 md:my-1">
                 <button
                   :disabled="isLoadingResource"
-                  class="btn btn-primary btn-sm md:btn-md normal-case text-xs md:text-sm w-full"
+                  class="btn bg-main-color text-white hover:text-main-color btn-sm md:btn-md normal-case text-xs md:text-sm w-full"
                   type="submit"
                   @click="onLoginClick"
                 >
                   <span
                     v-if="isLoadingResource"
-                    class="loading loading-md loading-spinner text-neutral-400"
+                    class="loading loading-md loading-spinner text-neutral-400 "
                   ></span>
-                  <span>Get Started</span>
+                  <span class="">Get Started</span>
                 </button>
+                <div class="flex items-center justify-center space-x-2">
+                  <hr class="w-6/12" />
+                  <span class="">Or</span>
+                  <hr class="w-6/12 text-main-color"/>
+                </div>
                 <button
                   :disabled="isLoadingResourceGoogle"
-                  class="btn btn-primary btn-sm md:btn-md normal-case text-xs md:text-sm w-full"
+                  class="btn bg-main-color btn-sm hover:text-main-color md:btn-md normal-case text-xs text-white md:text-sm w-full"
                   @click="loginWithGoogle"
-
                 >
+                  <span class=""><img src="../../../public/images/googleicon.png" class="md:w-11 w-8"></span>
                   <span
                     v-if="isLoadingResourceGoogle"
                     class="loading loading-md loading-spinner text-neutral-400"
                   ></span>
-                  Login with Google
+                  <span v-else>Login with Google</span>
                 </button>
               </div>
             </div>
