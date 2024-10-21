@@ -5,7 +5,7 @@ import UserBubble from '@/components/Bubble/UserBubble.vue'
 import { io } from 'socket.io-client'
 import UserInput from '@/components/UserInput.vue'
 import { colorGenerator } from '@/composables/colorgenerator'
-import { onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { useAuthStore, useNotificationsStore, useChatbotStore} from '@/stores'
 import hljs from 'highlight.js'
 import { useRoute, useRouter } from 'vue-router'
@@ -14,6 +14,7 @@ import _ from 'lodash'
 import DialogModal from '@/components/toasts/DialogModal.vue'
 import moment from 'moment'
 import LoadingPage from '@/components/LoadingPage.vue'
+import { Copy, Share } from 'lucide-vue-next'
 
 export interface Conversation {
   message: string
