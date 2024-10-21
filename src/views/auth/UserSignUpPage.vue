@@ -275,11 +275,25 @@
   </script>
 
   <template>
-    <main class="w-full  mx-auto p-6 flex items-center justify-center">
+
+    <main class="w-full h-screen grid grid-cols-2 mx-auto md:items-center">
+      <div class="md:col-span-1 col-span-2 flex flex-col justify-center">
+        <div class="md:hidden flex items-end gap-2 justify-center w-full text-center bg-white ">
+          <img src="../../../public/images/justice_scale.png" class="w-10 ">
+          <span class="text-main-color text-2xl">Wakili Ai</span>
+        </div>
+        <div class="w-10/12 md:block  hidden">
+          <img src="../../../public/images/loginpage.jpg">
+        </div>
+      </div>
       <div
-        class="w-full md:w-6/12 lg:w-5/12 xl:w-4/12 px-4 md:px-2 lg:px-0 mt-7 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
+        class="col-span-2 md:col-span-1 w-full md:w-10/12 lg:w-8/12 items-end"
       >
-        <div class="p-4 sm:p-7">
+        <div class="p-5">
+          <div class="md:flex hidden items-end gap-2 justify-center w-full text-center pb-2">
+            <img src="../../../public/images/justice_scale.png" class="w-10 inline-block">
+            <span class="text-main-color !text-2xl font-bold">Wakili Ai</span>
+          </div>
           <div class="text-center">
             <h1 class="block text-2xl font-bold text-gray-800 dark:text-white">Sign up</h1>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -293,13 +307,13 @@
             </p>
           </div>
 
-          <div class="mt-5">
+          <div class="">
                       <form @submit.prevent="onSubmit">
-                        <div class="grid gap-y-4">
+                        <div class="grid">
 
                           <!-- Email -->
-                          <div class="flex flex-col space-y-1">
-                            <div class="flex flex-col space-y-1">
+                          <div class="flex flex-col">
+                            <div class="flex flex-col">
                               <label class="label font-semibold text-sm" for="username"> full Names </label>
                               <input
                                 id="username"
@@ -332,7 +346,7 @@
                               {{ emailErrorMessage }}
                             </small>
                           </div>
-                          <div class="flex flex-col space-y-1">
+                          <div class="flex flex-col">
                             <label class="label font-semibold text-sm" for="password">Phone Number</label>
                             <input
                               id="phoneNumber"
@@ -355,7 +369,7 @@
                           </div>
 
                           <!-- Password -->
-                          <div class="flex flex-col space-y-1">
+                          <div class="flex flex-col">
                             <label class="label font-semibold text-sm" for="password"> Password </label>
                             <input
                               id="password"
@@ -378,7 +392,7 @@
 
                           <!-- Confirm Password -->
 
-                          <div class="flex flex-col space-y-1">
+                          <div class="flex flex-col pb-4 md:pb-4">
                             <label class="label font-semibold text-sm" for="confirmPassword">
                               Confirm Password
                             </label>
@@ -401,7 +415,7 @@
                             </small>
                           </div>
                           <button
-                            class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                            class="btn bg-main-color text-white hover:text-main-color btn-sm md:btn-md normal-case text-xs md:text-sm w-full"
                             type="submit"
                           >
                               <span
@@ -409,18 +423,23 @@
                                 class="loading loading-md loading-spinner text-neutral-400"
                               ></span>
                             <span v-else>Sign up</span>
-
                           </button>
+                          <div class="flex items-center justify-center space-x-2">
+                            <hr class="w-6/12" />
+                            <span class="">Or</span>
+                            <hr class="w-6/12 text-main-color"/>
+                          </div>
                           <button
                             :disabled="isLoadingResourceGoogle"
-                            class="btn btn-primary btn-sm md:btn-md normal-case text-xs md:text-sm w-full"
+                            class="btn btn-sm  bg-main-color hover:text-main-color text-white  md:btn-md normal-case text-xs md:text-sm w-full"
                             @click="signUpwithGoogle"
                           >
+                            <span class=""><img src="../../../public/images/googleicon.png" class="md:w-11 w-5"></span>
                             <span
                               v-if="isLoadingResourceGoogle"
                               class="loading loading-md loading-spinner text-neutral-400"
                             ></span>
-                            Sign up with Google
+                            <span v-else>Sign up with Google</span>
                           </button>
                         </div>
                       </form>
