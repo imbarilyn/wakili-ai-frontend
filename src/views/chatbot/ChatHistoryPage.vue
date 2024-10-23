@@ -36,13 +36,17 @@ interface Subscription {
 }
 
 const route = useRouter()
+const session_id = ref<string>('')
+const isConnected = ref<boolean>(false)
 
 
 onMounted(()=>{
   chatbotStore.convoId()
+  connectionChecker
+
   setColor()
-  // console.log(authStore.getToken)
-  //   console.log(authStore.getUserInfo()?.picture)
+
+
   return chatbotStore.isSubscription
 })
 const SOCKETS_URL = import.meta.env.VITE_APP_SOCKET_IO_URL as string
@@ -69,7 +73,38 @@ socket.on('error', (err)=>{
   console.log('error connecting to the server', err )
 })
 
+socket.on('check_connection', (response) => {
+  console.log('checking-connection', response)
+  session_id.value = response.sessionId
+  isConnected.value = response.isConnected
+  // isConnected.value = false
+})
+
+const showNotConnectedDialog = ref<boolean>(false)
+const maxAttempt = 4
+const checkInterval = 1000
+let attemptCount = 0
+const checkConnection = ()=> {
+  if(isConnected.value){
+    clearInterval(connectionChecker)
+  }
+  else{
+    attemptCount++
+    showNotConnectedDialog.value = true
+    if(attemptCount > maxAttempt){
+      clearInterval(connectionChecker)
+      window.location.reload()
+      showNotConnectedDialog.value = false
+    }
+  }
+}
+
+const connectionChecker = setInterval(checkConnection, checkInterval)
 const isPlanExpired = ref(false)
+
+const closeNotConnectedDialog = ()=>{
+  showNotConnectedDialog.value = false
+}
 
 
 // subscriptions
@@ -680,13 +715,18 @@ watch(()=>chatbotStore.isOpenShareDialog.isOpen, (value)=>{
     showCopyBtn.value=false
   }
 })
+
+const isPositiveFeedback = ref(false)
 const handleThumbUp = () => {
-  console.log('positive feedback')
-  chatbotStore.setPositiveFeedback(true)
+  isPositiveFeedback.value = false
+  chatbotStore.setFeedback(true)
 }
 
 const handleThumbDown = () => {
-  console.log('Negative feedback')
+  isPositiveFeedback.value = false
+  chatbotStore.setFeedback(true)
+
+
 }
 
 const userFeedback = ref<string>('')
@@ -715,6 +755,9 @@ watch(userFeedback,(value)=>{
   }
 
 })
+const reloadPage = ()=>{
+  window.location.reload()
+}
 
 
 </script>
@@ -787,7 +830,7 @@ watch(userFeedback,(value)=>{
                     />
                     <ChatbotBubble
                       @thumb-up="handleThumbUp"
-                      @thumb-down="handleThumbUp"
+                      @thumb-down="handleThumbDown"
                       v-else-if="!conv.isUser && chatbotStore.conversationId"
                       :chatbot-message ="marked.parse(conv.message) as string"
                       :is-typing="conv.isTyping"
@@ -801,11 +844,16 @@ watch(userFeedback,(value)=>{
               </div>
             </div>
           </template>
+          <template v-else>
+            <LoadingPage />
+          </template>
         </Transition>
       </div>
       <!--      <div class="mb-14"></div>-->
       <div v-if="isBottom" class="py-12 bg-gradient-to-t from-main-color-light-color block"></div>
-      <div class="fixed lg:ms-64 bottom-0 left-0  right-0 lg:pb-6 bg-white">
+      <div class="fixed bottom-0 left-0  right-0 lg:pb-6 bg-white"
+           :class="[chatbotStore.collapseSidebarOnLarge? 'lg:ms-16 duration-700 delay-300':'lg:ms-64']"
+      >
         <div class="w-full grid grid-cols">
           <div
             class=" w-11/12 lg:10/12 mx-auto">
@@ -853,12 +901,12 @@ watch(userFeedback,(value)=>{
 <!--Feedback Modal-->
       <DialogModal
         :is-open="chatbotStore.isOpenPositiveFeedback.isOpen"
-        @closeModal="chatbotStore.setPositiveFeedback(false)"
+        @closeModal="chatbotStore.setFeedback(false)"
       >
         <template #title>
           <div class="flex flex-row-reverse justify-between">
             <div class="">
-              <button class="btn btn-sm btn-circle" @click="chatbotStore.setPositiveFeedback(false)"><span
+              <button class="btn btn-sm btn-circle" @click="chatbotStore.setFeedback(false)"><span
                 class="material-icons-outlined">close</span></button>
             </div>
             <div>
@@ -894,7 +942,7 @@ watch(userFeedback,(value)=>{
                 together with the inputs and outputs for the purpose of training and inporiving our models.</p>
             </div>
             <div class="space-x-2 flex justify-end">
-              <button class="btn bg-main-color text-white" @click="chatbotStore.setPositiveFeedback(false)">
+              <button class="btn bg-main-color text-white" @click="chatbotStore.setFeedback(false)">
                 <span>cancel</span>
               </button>
               <button class="bg-secondary-color btn">
@@ -1003,6 +1051,34 @@ watch(userFeedback,(value)=>{
                 <span>Twitter</span>
               </div>
             </div>
+          </div>
+        </template>
+      </DialogModal>
+
+
+      <DialogModal :is-open="showNotConnectedDialog" @closeModal="closeNotConnectedDialog">
+        <template #title>
+          <div class="w-full flex justify-end">
+            <button class="btn btn-sm btn-ghost btn-circle" @click="closeNotConnectedDialog">
+              <span class="material-icons-outlined">close</span>
+            </button>
+          </div>
+          <div class="flex justify-center">
+            <span class="loading loading-bars loading-lg"></span>
+          </div>
+        </template>
+        <template #body>
+          <div class="flex flex-col justify-center items-center">
+            <p class="text-lg">Establishing connection</p>
+            <!--              <p class="text-sm">Kindly wait as we establish connection</p>-->
+          </div>
+        </template>
+        <template #footer>
+          <div class="flex justify-center">
+            <button class="btn btn-sm px-6 bg-main-color"
+                    @click="reloadPage">
+              <span class="material-icons-outlined text-white">refresh</span>
+            </button>
           </div>
         </template>
       </DialogModal>
