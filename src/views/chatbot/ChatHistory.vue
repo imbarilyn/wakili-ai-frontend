@@ -11,28 +11,28 @@ const chatbotStore = useChatbotStore()
 console.log(props)
 
 const viewChat = (conversationId: string) => {
-  chatbotStore.setActiveHistoryButton(props.id)
   console.log('view chat', props)
   chatbotStore.setActiveHistoryButton(props.id)
-  chatbotStore.displayChatHistoryContent(conversationId)
-    .then((resp) => {
-      console.log(resp)
-      try {
-        chatbotStore.setAppIsFetching(true)
-        if (resp.result === 'ok') {
-          chatbotStore.chatHistoryContent = resp.data
-          setTimeout(() => {
-            chatbotStore.setAppIsFetching(false)
-            router.push({ name: 'chat-history', params: { conversationId: conversationId } })
-          }, 1000)
-        }
-      } catch {
-        console.log('error')
-      }
-      // finally{
-      //   chatbotStore.setAppIsFetching(false)
-      // }
-    })
+  router.push({ name: 'chat-history', params: { conversationId: conversationId } })
+  // chatbotStore.displayChatHistoryContent(conversationId)
+    // .then((resp) => {
+    //   console.log(resp)
+    //   try {
+    //     chatbotStore.setAppIsFetching(true)
+    //     if (resp.result === 'ok') {
+    //       chatbotStore.chatHistoryContent = resp.data
+    //       setTimeout(() => {
+    //         chatbotStore.setAppIsFetching(false)
+    //         router.push({ name: 'chat-history', params: { conversationId: conversationId } })
+    //       }, 1000)
+    //     }
+    //   } catch {
+    //     console.log('error')
+    //   }
+    //   // finally{
+    //   //   chatbotStore.setAppIsFetching(false)
+    //   // }
+    // })
 }
 
 
@@ -40,7 +40,7 @@ const viewChat = (conversationId: string) => {
 
 <template>
   <div
-    :class="[chatbotStore.getActiveHistoryButton === props.id? 'bg-cadet-blue-300': '']"
+    :class="[chatbotStore.getActiveHistoryButton === props.conversationId? 'bg-cadet-blue-300': '']"
     class="grid grid-cols-12 btn btn-sm btn-ghost gap-1.5 my-1" @click="viewChat(props.conversationId)">
     <div
       class="col-span-2 flex flex-row items-center justify-center" >
