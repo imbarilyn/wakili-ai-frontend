@@ -27,7 +27,6 @@ interface SharedConversation {
 
 const sharedConversationArray = ref<SharedConversation>()
 const props = defineProps<ShareChat>()
-const isChatShare = ref(false)
 const router = useRouter()
 
 
@@ -39,23 +38,13 @@ onMounted(() => {
         if (response.result === 'ok') {
           sharedConversationArray.value = { ...response.data }
         } else {
-          notificationStore.addNotification('Failed to load chat xxx', 'error')
-          setTimeout(()=>{
-            router.push({name: 'not-found'})
-
-          }, 1000)
+          console.log('**share chat', sharedConversationArray.value)
+          // notificationStore.addNotification('Failed to load chat', 'error')
         }
       })
       .catch((error) => {
         console.error(error)
-        notificationStore.addNotification('Failed to load chat', 'error')
-        setTimeout(()=>{
-          router.push({name: 'not-found'})
-        }, 1000)
-      })
-      .finally(() => {
-        isChatShare.value = true
-        console.log(sharedConversationArray.value)
+        // notificationStore.addNotification('Failed to load chat', 'error')
       })
   })
 })
@@ -273,11 +262,15 @@ marked.use({
   gfm: true,
   useNewRenderer: true
 })
+
+const landingPage = ()=>{
+  window.location.href = 'https://wakiliorg.mzawadi.com/'
+}
 </script>
 
 <template>
   <div class="min-h-screen w-full overflow-hidden max-w-4xl mx-auto">
-    <div v-if="isChatShare && sharedConversationArray" class="space-y-4 relative">
+    <div v-if="sharedConversationArray" class="space-y-4 relative">
 
       <div class="flex flex-col w-full items-center py-6 space-y-2 bg-red-300 sticky top-0  z-40">
         <div class="flex justify-center items-end gap-2 sticky top-0">
@@ -316,6 +309,17 @@ marked.use({
           />
         </template>
       </ul>
+    </div>
+
+    <div v-else  class="flex-1 flex flex-col justify-center items-center h-screen" >
+      <div class="w-3/4 flex justify-center">
+        <img alt="404 error"  src="../../../public/images/PageNotFoundShare.png" />
+      </div>
+      <div class="text-center">
+        <h1 class="text-3xl font-bold text-neutral-900">Page not found</h1>
+        <p class="text-neutral-500">Something went wrong</p>
+        <p class="text-neutral-500 text-lg">You could try Wakili Ai at <span class="btn btn-sm btn-ghost hover:bg-transparent ps-0 text-blue-500" @click="landingPage">Freemium package</span> </p>
+      </div>
     </div>
   </div>
 </template>
