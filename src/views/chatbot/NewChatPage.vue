@@ -7,15 +7,12 @@ import { colorGenerator } from '@/composables/colorgenerator'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useAuthStore, useNotificationsStore, useChatbotStore } from '@/stores'
 import hljs from 'highlight.js'
-import { useRoute, useRouter } from 'vue-router'
 import { marked, type RendererObject, type Tokens } from 'marked'
 import _ from 'lodash'
 import DialogModal from '@/components/toasts/DialogModal.vue'
-import moment from 'moment'
-import LoadingPage from '@/components/LoadingPage.vue'
-
 import { Share , Copy} from 'lucide-vue-next'
 import ListBox from '@/components/ListBox.vue'
+import { useRouter } from 'vue-router'
 
 export interface Conversation {
   message: string
@@ -29,17 +26,9 @@ export interface Conversation {
   }
 }
 
-// interface Subscription {
-//   message: string
-//   sessionId: string
-//   conversationId: string
-//   createdAt: 'string'
-// }
-
-const route = useRouter()
-
 
 onMounted(() => {
+  connectionChecker
   chatbotStore.convoId()
   setColor()
   // console.log(authStore.getToken)
@@ -56,16 +45,25 @@ const appIsFetching = ref(false)
 const conversation = ref<Conversation []>([])
 const placeholder = ref<string>('How can Wakili help you today?')
 const isGeneratingResponses = ref(false)
-const chatTextColor = ref('text-white')
 const mesRes = ref('')
 const conversationContainerRef = ref<HTMLDivElement | null>(null)
+const session_id = ref<string>('')
+const isConnected = ref<boolean>(false)
+const router = useRouter()
+
+const reloadPage = ()=>{
+  window.location.reload()
+}
 
 
+const closeNotConnectedDialog = ()=>{
+  showNotConnectedDialog.value = false
+}
 socket.on('connect', () => {
   console.log('connected successfully')
 })
 
-//  any errrors associated with the socket connection
+//  any errors associated with the socket connection
 socket.on('error', (err) => {
   console.log('error connecting to the server', err)
 })
@@ -78,8 +76,36 @@ socket.on('payment_required', (message) => {
   chatbotStore.setSubscription(false)
   console.log(message)
   isPlanExpired.value = true
-
 })
+
+socket.on('check_connection', (response) => {
+  console.log('checking-connection', response)
+  session_id.value = response.sessionId
+  isConnected.value = response.isConnected
+  // isConnected.value = false
+})
+
+const showNotConnectedDialog = ref<boolean>(false)
+const maxAttempt = 4
+const checkInterval = 1000
+let attemptCount = 0
+
+const checkConnection = ()=> {
+  if(isConnected.value){
+    clearInterval(connectionChecker)
+  }
+  else{
+    attemptCount++
+    showNotConnectedDialog.value = true
+    if(attemptCount > maxAttempt){
+      clearInterval(connectionChecker)
+      window.location.reload()
+      showNotConnectedDialog.value = false
+    }
+  }
+}
+
+const connectionChecker = setInterval(checkConnection, checkInterval)
 const { darkBgColor, setColor } = colorGenerator(authStore.getUserInfo()?.firstName || 'You')
 
 // const renderer: any = {
@@ -505,21 +531,17 @@ watch(() => mesRes.value, (value: string) => {
 })
 const subscriptionLoading = ref(false)
 const subscribeToPlan = () => {
-  // chatbotStore.setSubscription(true)
   subscriptionLoading.value = true
-
   chatbotStore.getSubscription()
     .then((response) => {
       console.log(chatbotStore.subscription)
       if (response.result === 'success') {
-        // chatbotStore.setSubscriptionData(response.data)
         notification.addNotification('Subscription data fetched successfully', 'success')
-        route.push({
+        router.push({
           name: 'chat-subscription'
         })
       } else {
         console.log('failed to fetch subscription data', response.result)
-        // notification.addNotification('Failed to fetch subscription data kindly try again', 'error')
       }
     })
     .catch((error) => {
@@ -835,10 +857,12 @@ const negativeFeedbackOption = [
       </div>
       <!--      <div class="mb-14"></div>-->
       <div v-if="isBottom" class="py-12 bg-gradient-to-t from-main-color-light-color block"></div>
-      <div class="fixed lg:ms-64 bottom-0 left-0  right-0 lg:pb-6 bg-white">
+      <div class="fixed  bottom-0 left-0 mx-auto  right-0 lg:pb-6 bg-white"
+           :class="[chatbotStore.collapseSidebarOnLarge? 'lg:ms-16 duration-700 delay-300':'lg:ms-64']"
+      >
         <div class="w-full grid grid-cols">
           <div
-            class=" w-11/12 lg:10/12 mx-auto">
+            class=" w-11/12 lg:6/12 mx-auto">
             <UserInput
               class="bg-secondary-color z-10 mb-6"
               :disabled="false"
@@ -900,7 +924,7 @@ const negativeFeedbackOption = [
         <template #body>
           <div class="space-y-3">
             <p>Please provide details down below</p>
-            <ListBox v-if="!isPositiveFeedback" :list-props="negativeFeedbackOption" />
+<!--            <ListBox v-if="!isPositiveFeedback" :list-props="negativeFeedbackOption" />-->
             <div @click.stop="addFocus">
               <textarea
                 v-model="userFeedback"
@@ -933,6 +957,33 @@ const negativeFeedbackOption = [
                 <!--              <span class="loading loading-spinner loading-sm"></span>-->
               </button>
             </div>
+          </div>
+        </template>
+      </DialogModal>
+
+      <DialogModal :is-open="showNotConnectedDialog" @closeModal="closeNotConnectedDialog">
+        <template #title>
+          <div class="w-full flex justify-end">
+            <button class="btn btn-sm btn-ghost btn-circle" @click="closeNotConnectedDialog">
+              <span class="material-icons-outlined">close</span>
+            </button>
+          </div>
+          <div class="flex justify-center">
+            <span class="loading loading-bars loading-lg"></span>
+          </div>
+        </template>
+        <template #body>
+          <div class="flex flex-col justify-center items-center">
+            <p class="text-lg">Establishing connection</p>
+            <!--              <p class="text-sm">Kindly wait as we establish connection</p>-->
+          </div>
+        </template>
+        <template #footer>
+          <div class="flex justify-center">
+            <button class="btn btn-sm px-6 bg-main-color"
+                    @click="reloadPage">
+              <span class="material-icons-outlined text-white">refresh</span>
+            </button>
           </div>
         </template>
       </DialogModal>
