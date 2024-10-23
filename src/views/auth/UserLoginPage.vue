@@ -95,8 +95,7 @@ const onLoginClick = () => {
         notification.addNotification(response.message ?? 'Login Successful', 'success')
         setTimeout(() => {
           router.push({
-            name: 'new-chat',
-            params: {chat: 'new-chat'}
+            name: 'new-chat'
           })
         }, 500)
       } else {
@@ -160,8 +159,7 @@ const loginWithGoogle = () => {
         setTimeout(() => {
           notification.addNotification('Login successful', 'success')
           router.push({
-            name: 'new-chat',
-            params: {chat: 'new-chat'}
+            name: 'new-chat'
           })
         }, 1000)
       } else {
