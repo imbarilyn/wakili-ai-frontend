@@ -42,12 +42,12 @@ const routes: any = [
   },
   {
     name: 'chat-page',
-    path: '/new-page',
+    path: '/new-chat',
     component: () => import('../views/chatbot/ChatPage.vue'),
     children: [
       {
         name: 'new-chat',
-        path: '/:chat',
+        path: '',
         component: () => import('../views/chatbot/NewChatPage.vue'),
         props: (route: any) => {
           return {
