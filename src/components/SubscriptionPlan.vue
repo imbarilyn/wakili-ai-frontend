@@ -22,7 +22,7 @@ const availableSubscriptions = ref<AvailableSubscriptionPayload []>([])
       availableSubscriptions.value = response.data
     }
     else{
-      notificationStore.addNotification('There is an error retriving plans', 'error')
+      notificationStore.addNotification('There is an error retrieving plans', 'error')
       return
     }
   })

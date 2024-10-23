@@ -159,7 +159,6 @@ const directChatPage = () => {
   router.go(-1)
 }
 const isLoadingUserPLan = ref<boolean>(true)
-const isErrorUserPlan = ref<boolean>(false)
 const userSubscription = ref<UserSubscription>()
 onMounted(()=>{
   isLoadingUserPLan.value = true

@@ -54,11 +54,11 @@ const closeSidebar = ()=>{
   }
   return chatbotStore.isCollapsed = true
 }
- const collapseSidebarOnLarge = ref<boolean>(false)
-const collapseonLarge = ()=>{
-  console.log("Clicking the collapse arrow")
-  collapseSidebarOnLarge.value = !collapseSidebarOnLarge.value
-}
+//  const collapseSidebarOnLarge = ref<boolean>(false)
+// const collapseonLarge = ()=>{
+//   console.log("Clicking the collapse arrow")
+//   collapseSidebarOnLarge.value = !collapseSidebarOnLarge.value
+// }
 
 const showNewChat = ref<boolean>(false)
 
@@ -119,11 +119,12 @@ watch(()=> chatbotStore.isResponseGenerating, (value)=>{
   }
 })
 
+const setActiveHistoryButton = (convId: string)=>{
+  chatbotStore.setActiveHistoryButton(convId)
+}
+
 
 </script>
-
-
-
 
 <template>
   <div class="h-screen">
