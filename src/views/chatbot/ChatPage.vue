@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore, useChatbotStore, useNotificationsStore } from '@/stores'
 import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ToastContainer from '@/components/toasts/ToastContainer.vue'
 import ToastAlert from '@/components/toasts/ToastAlert.vue'
 import SidebarComponent from '@/components/SidebarComponent.vue'
@@ -15,18 +15,10 @@ const notificationsStore = useNotificationsStore()
 const authStore = useAuthStore()
 const router = useRouter()
 
-const currentYear = ()=>{
-  return new Date().getFullYear();
-}
-
-const newChat = ()=>{
-  router.push({name: 'new-chat'})
 
 
-}
-const collapseSidebar = ()=>{
-  chatbotStore.setCollapse(true)
-}
+
+
 const windowSize = ref<number>(window.innerWidth)
 watch(()=>windowSize.value, (value)=>{
   console.log(value)
@@ -45,11 +37,17 @@ const signOut = ()=>{
     router.push({name: 'user-login'})
     authStore.setCloseLogoutDialog()
   }, 1000)
-
-
 }
+const route = useRoute()
+onMounted(()=>{
+  console.log('params**',route.params)
+  chatbotStore.setActiveHistoryButton(route.params.conversationId as string)
+    chatbotStore.displayChatHistoryContent(route.params.conversationId as string)
+      .then((resp)=>{
+        console.log('**isChatHistoryError', resp)
+      })
 
-
+})
 </script>
 
 
@@ -103,7 +101,7 @@ const signOut = ()=>{
         </template>
         <template #footer>
           <div class="flex justify-center">
-            <button class="btn bg-main-color text-white me-5" @click="signOut">Sign Out</button>
+            <button class="btn bg-main-color text-white me-5 hover:outline outline-offset-1 outline-main-color hover:text-main-color" @click="signOut">Sign Out</button>
             <button class="btn bg-secondary-color w-[200px]" @click="authStore.setCloseLogoutDialog()">
               Cancel
             </button>
