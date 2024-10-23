@@ -66,11 +66,13 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   const isOpenShareDialog = ref({
     isOpen: false
   })
-
+  const collapseSidebarOnLarge = ref<boolean>(false)
 
 
     // setters
-
+  const setCollapseSidebarOnLarge = ()=>{
+    return collapseSidebarOnLarge.value = !collapseSidebarOnLarge.value
+  }
   const setIsResponseGenerating = (value: boolean)=>{
     return isResponseGenerating.value = value
   }
@@ -108,7 +110,6 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   //actions
   async function convoId(){
     const authStore = useAuthStore()
-    const notification = useNotificationsStore()
     console.log(authStore.getToken)
     try{
       const response = await fetch(`${BASE_URL}/api/get-conversation-id/`, {
@@ -124,16 +125,16 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
       if(data.result === 'ok'){
         // console.log('conversation id', data.conversationId)
         conversationId.value = data.conversationId
-        notification.addNotification('Wakili Ai is set up and ready to assist you', 'success')
+        // notification.addNotification('Wakili Ai is set up and ready to assist you', 'success')
       }
       else{
         console.log('error', data)
-        notification.addNotification('There is an error, please try again', 'error')
+        // notification.addNotification('There is an error, please try again', 'error')
       }
     }
     catch(error){
       console.log('error-convId', error)
-      notification.addNotification('There is an error, please try again', 'error')
+      // notification.addNotification('There is an error, please try again', 'error')
     }
   }
 
@@ -251,7 +252,8 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
   }
 
   async function displayChatHistoryContent(convId: string) {
-    const notification = useNotificationsStore()
+    const  isChatHistoryError = ref<boolean>(false)
+    appIsFetching.value = true
     try {
       const response = await fetch(`${BASE_URL}/api/chat-history/chats/${convId}/`, {
         method: 'GET',
@@ -261,13 +263,20 @@ export const  useChatbotStore = defineStore('chatbotStore', ()=>{
         mode: 'cors'
       })
       const resp = await response.json()
-      console.log(resp)
-      return resp
+      if(resp.result === 'ok'){
+        chatHistoryContent.value  = resp.data
+        return isChatHistoryError.value = false
+      }
+      else{
+        return isChatHistoryError.value = true
+
+      }
     } catch (error) {
       console.log(error)
-      notification.addNotification('There is an error fetching chat history', 'error')
+      // notification.addNotification('There is an error fetching chat history', 'error')
     } finally {
       console.log('finally')
+      appIsFetching.value = false
     }
   }
 const isErrorUserPlan = ref<boolean>(false)
@@ -335,7 +344,7 @@ const isErrorUserPlan = ref<boolean>(false)
     }
     catch (error){
       console.error(error)
-      notification.addNotification('There is an error fetching chat history', 'error')
+      // notification.addNotification('There is an error fetching chat history', 'error')
     }
   }
 
@@ -372,6 +381,8 @@ const isErrorUserPlan = ref<boolean>(false)
       isOpenShareDialog,
       setShareDialog,
       getChatLink: generateChatShareLink,
-      loadShareChat
+      loadShareChat,
+      setCollapseSidebarOnLarge,
+      collapseSidebarOnLarge
     }
 })
