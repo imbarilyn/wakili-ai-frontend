@@ -10,9 +10,9 @@ const notificationsStore = useNotificationsStore()
 
 <template>
   <RouterView  #default="{ Component, route }">
-<template v-if="Component">
-      <component :is="Component" :key="route.fullPath"/>
-</template>
+    <template v-if="Component">
+      <component :is="Component" :key="route.fullPath" />
+    </template>
   </RouterView>
 
   <teleport to="body">

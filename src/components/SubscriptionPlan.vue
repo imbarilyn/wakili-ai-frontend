@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { useChatbotStore, type AvailableSubscriptionPayload, useNotificationsStore } from '@/stores'
-import { computed, onMounted, ref } from 'vue'
+import {ref } from 'vue'
 
 const chatbotStore = useChatbotStore()
 const notificationStore = useNotificationsStore()
